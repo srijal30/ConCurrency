@@ -1,1 +1,4 @@
-.protobuf==4.22.0
+cffi==1.15.1
+cryptography==39.0.1
+protobuf==4.22.0
+pycparser==2.21
