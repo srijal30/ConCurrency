@@ -1,5 +1,7 @@
 syntax = "proto3";
 
+package messages;
+
 //Blockchain Data Model
 message BlockChain {
   repeated Block block = 1;
