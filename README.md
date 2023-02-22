@@ -15,7 +15,7 @@ git clone https://github.com/srijal30/ConCurrency.git
 python -m venv venv
 pip install -r requirements.txt
 ```
-* (Optional) To compile the ProtoBuf files locally, first make sure you have [protoc](https://github.com/protocolbuffers/protobuf/releases) installed. Then call this commadn:
+* (Optional) To compile the ProtoBuf files locally, first make sure you have [protoc](https://github.com/protocolbuffers/protobuf/releases) installed. Then call this command:
 ```
 protoc schema.proto -I=. --python_out=src
 ```
