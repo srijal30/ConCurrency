@@ -12,20 +12,18 @@ class BlockChain(_message.Message):
     def __init__(self, block: _Optional[_Iterable[_Union[Block, _Mapping]]] = ...) -> None: ...
 
 class Block(_message.Message):
-    __slots__ = ["prev_hash", "curr_hash", "nonce", "pow", "merkle_root", "trans"]
+    __slots__ = ["prev_hash", "curr_hash", "nonce", "merkle_root", "trans"]
     PREV_HASH_FIELD_NUMBER: _ClassVar[int]
     CURR_HASH_FIELD_NUMBER: _ClassVar[int]
     NONCE_FIELD_NUMBER: _ClassVar[int]
-    POW_FIELD_NUMBER: _ClassVar[int]
     MERKLE_ROOT_FIELD_NUMBER: _ClassVar[int]
     TRANS_FIELD_NUMBER: _ClassVar[int]
     prev_hash: int
     curr_hash: int
     nonce: int
-    pow: int
     merkle_root: int
     trans: _containers.RepeatedCompositeFieldContainer[Transaction]
-    def __init__(self, prev_hash: _Optional[int] = ..., curr_hash: _Optional[int] = ..., nonce: _Optional[int] = ..., pow: _Optional[int] = ..., merkle_root: _Optional[int] = ..., trans: _Optional[_Iterable[_Union[Transaction, _Mapping]]] = ...) -> None: ...
+    def __init__(self, prev_hash: _Optional[int] = ..., curr_hash: _Optional[int] = ..., nonce: _Optional[int] = ..., merkle_root: _Optional[int] = ..., trans: _Optional[_Iterable[_Union[Transaction, _Mapping]]] = ...) -> None: ...
 
 class Transaction(_message.Message):
     __slots__ = ["sender_pub_key", "receiver_pub_key", "signature", "amount"]

@@ -13,7 +13,7 @@ _sym_db = _symbol_database.Default()
 
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x0cschema.proto\x12\x08messages\",\n\nBlockChain\x12\x1e\n\x05\x62lock\x18\x01 \x03(\x0b\x32\x0f.messages.Block\"\x84\x01\n\x05\x42lock\x12\x11\n\tprev_hash\x18\x01 \x01(\x04\x12\x11\n\tcurr_hash\x18\x02 \x01(\x04\x12\r\n\x05nonce\x18\x03 \x01(\x04\x12\x0b\n\x03pow\x18\x04 \x01(\x04\x12\x13\n\x0bmerkle_root\x18\x05 \x01(\x04\x12$\n\x05trans\x18\x06 \x03(\x0b\x32\x15.messages.Transaction\"b\n\x0bTransaction\x12\x16\n\x0esender_pub_key\x18\x01 \x01(\t\x12\x18\n\x10receiver_pub_key\x18\x02 \x01(\t\x12\x11\n\tsignature\x18\x03 \x01(\t\x12\x0e\n\x06\x61mount\x18\x04 \x01(\x04\"\n\n\x08Snapshotb\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x0cschema.proto\x12\x08messages\",\n\nBlockChain\x12\x1e\n\x05\x62lock\x18\x01 \x03(\x0b\x32\x0f.messages.Block\"w\n\x05\x42lock\x12\x11\n\tprev_hash\x18\x01 \x01(\x04\x12\x11\n\tcurr_hash\x18\x02 \x01(\x04\x12\r\n\x05nonce\x18\x03 \x01(\x04\x12\x13\n\x0bmerkle_root\x18\x04 \x01(\x04\x12$\n\x05trans\x18\x05 \x03(\x0b\x32\x15.messages.Transaction\"b\n\x0bTransaction\x12\x16\n\x0esender_pub_key\x18\x01 \x01(\t\x12\x18\n\x10receiver_pub_key\x18\x02 \x01(\t\x12\x11\n\tsignature\x18\x03 \x01(\t\x12\x0e\n\x06\x61mount\x18\x04 \x01(\x04\"\n\n\x08Snapshotb\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
@@ -23,10 +23,10 @@ if _descriptor._USE_C_DESCRIPTORS == False:
   DESCRIPTOR._options = None
   _globals['_BLOCKCHAIN']._serialized_start=26
   _globals['_BLOCKCHAIN']._serialized_end=70
-  _globals['_BLOCK']._serialized_start=73
-  _globals['_BLOCK']._serialized_end=205
-  _globals['_TRANSACTION']._serialized_start=207
-  _globals['_TRANSACTION']._serialized_end=305
-  _globals['_SNAPSHOT']._serialized_start=307
-  _globals['_SNAPSHOT']._serialized_end=317
+  _globals['_BLOCK']._serialized_start=72
+  _globals['_BLOCK']._serialized_end=191
+  _globals['_TRANSACTION']._serialized_start=193
+  _globals['_TRANSACTION']._serialized_end=291
+  _globals['_SNAPSHOT']._serialized_start=293
+  _globals['_SNAPSHOT']._serialized_end=303
 # @@protoc_insertion_point(module_scope)
