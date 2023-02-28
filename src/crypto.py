@@ -3,9 +3,15 @@ File where all the crypto functionality will be stored
 """
 
 from typing import Any, Tuple
-from hashlib import sha256
+from schema_pb2 import Block
 
-# TO DO: make this work with datas structures like block and transaction
+from hashlib import sha256
+from cryptography.hazmat.primitives.asymmetric.rsa import (
+    generate_private_key,
+    RSAPrivateKey,
+    RSAPublicKey
+)
+
 def hash(*args: Any) -> str:
     """Hashes the input using sha256"""
     msg = ""
@@ -14,20 +20,33 @@ def hash(*args: Any) -> str:
     hash = sha256(msg.encode())
     return hash.hexdigest()
 
-#maybe create seperate hashing functions for each datatype that needs to be hashed?
 
-def create_keys() -> Tuple[int, int]:
-    """
-    Creates a keypair using OpenSSL's RSA algorithm.
-    - index 0 is the public key
-    - index 1 is the private key
-    """
-    return (0, 0)
+def hash_block(block: Block) -> str:
+    """Returns the hash of the block's contents."""
+    return hash(
+        block.prev_hash,
+        block.nonce,
+        block.merkle_root
+    )
 
-def validate_signature(signature: str, pub_key : None) -> bool:
+
+def create_keys() -> Tuple[RSAPrivateKey, RSAPublicKey]:
+    """
+    Creates and returns keypair using OpenSSL's RSA algorithm.
+    """
+    priv_key : RSAPrivateKey = generate_private_key(
+        public_exponent=65537,
+        key_size=2
+    )
+    pub_key : RSAPublicKey = priv_key.public_key()
+    return (priv_key, pub_key)
+
+
+def validate_signature(signature: str, pub_key : RSAPublicKey) -> bool:
     """Validates an RSA signature using OpenSSL"""
     return False
 
-def create_signature(message: str, priv_key: None) -> str:
+
+def create_signature(message: str, priv_key: RSAPrivateKey) -> str:
     """Creates and returns an RSA signature using OpenSSL"""
     return False

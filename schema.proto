@@ -12,10 +12,9 @@ message Block {
   uint64 curr_hash = 2;
 
   uint64 nonce = 3;
-  uint64 pow = 4;
 
-  uint64 merkle_root = 5; //we can hash all the transactions and use that for the pow instead?
-  repeated Transaction trans = 6;
+  uint64 merkle_root = 4; //we can hash all the transactions and use that for the pow instead?
+  repeated Transaction trans = 5;
 };
 
 message Transaction {
