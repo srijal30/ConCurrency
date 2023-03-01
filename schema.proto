@@ -17,12 +17,21 @@ message Block {
 
 message Transaction {
   string hash = 1;
+
   string sender_pub_key = 2;
   string receiver_pub_key = 3;
   string signature = 4;
+
   uint64 amount = 5;
+  uint64 sequence = 6;
 }
 
-//TO DO: Snapshot/Ledger 
 message Snapshot{
+  repeated Account accounts = 1;
+}
+
+message Account{
+  string pub_key = 1;
+  uint64 balance = 2;
+  uint64 sequence = 3;
 }

@@ -36,20 +36,21 @@ def hash(*args: Any) -> str:
     return hash.hexdigest()
 
 
-def hash_transaction(tran: Transaction) -> str:
-    return hash(
-        tran.sender_pub_key,
-        tran.amount,
-        tran.receiver_pub_key
-    )
-
-
 def hash_block(block: Block) -> str:
     """Returns the hash of the block's contents."""
     return hash(
         block.prev_hash,
         block.nonce,
         block.merkle_root
+    )
+
+
+def hash_transaction(tran: Transaction) -> str:
+    """Returns the has of the transaction's contents."""
+    return hash(
+        tran.receiver_pub_key,
+        tran.amount,
+        tran.sequence
     )
 
 

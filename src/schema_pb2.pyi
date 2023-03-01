@@ -26,19 +26,33 @@ class Block(_message.Message):
     def __init__(self, prev_hash: _Optional[int] = ..., curr_hash: _Optional[int] = ..., nonce: _Optional[int] = ..., merkle_root: _Optional[int] = ..., trans: _Optional[_Iterable[_Union[Transaction, _Mapping]]] = ...) -> None: ...
 
 class Transaction(_message.Message):
-    __slots__ = ["hash", "sender_pub_key", "receiver_pub_key", "signature", "amount"]
+    __slots__ = ["hash", "sender_pub_key", "receiver_pub_key", "signature", "amount", "sequence"]
     HASH_FIELD_NUMBER: _ClassVar[int]
     SENDER_PUB_KEY_FIELD_NUMBER: _ClassVar[int]
     RECEIVER_PUB_KEY_FIELD_NUMBER: _ClassVar[int]
     SIGNATURE_FIELD_NUMBER: _ClassVar[int]
     AMOUNT_FIELD_NUMBER: _ClassVar[int]
+    SEQUENCE_FIELD_NUMBER: _ClassVar[int]
     hash: str
     sender_pub_key: str
     receiver_pub_key: str
     signature: str
     amount: int
-    def __init__(self, hash: _Optional[str] = ..., sender_pub_key: _Optional[str] = ..., receiver_pub_key: _Optional[str] = ..., signature: _Optional[str] = ..., amount: _Optional[int] = ...) -> None: ...
+    sequence: int
+    def __init__(self, hash: _Optional[str] = ..., sender_pub_key: _Optional[str] = ..., receiver_pub_key: _Optional[str] = ..., signature: _Optional[str] = ..., amount: _Optional[int] = ..., sequence: _Optional[int] = ...) -> None: ...
 
 class Snapshot(_message.Message):
-    __slots__ = []
-    def __init__(self) -> None: ...
+    __slots__ = ["accounts"]
+    ACCOUNTS_FIELD_NUMBER: _ClassVar[int]
+    accounts: _containers.RepeatedCompositeFieldContainer[Account]
+    def __init__(self, accounts: _Optional[_Iterable[_Union[Account, _Mapping]]] = ...) -> None: ...
+
+class Account(_message.Message):
+    __slots__ = ["pub_key", "balance", "sequence"]
+    PUB_KEY_FIELD_NUMBER: _ClassVar[int]
+    BALANCE_FIELD_NUMBER: _ClassVar[int]
+    SEQUENCE_FIELD_NUMBER: _ClassVar[int]
+    pub_key: str
+    balance: int
+    sequence: int
+    def __init__(self, pub_key: _Optional[str] = ..., balance: _Optional[int] = ..., sequence: _Optional[int] = ...) -> None: ...
