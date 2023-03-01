@@ -27,13 +27,13 @@ def verify_block(block: Block) -> bool:
     return hash_correct
 
 
-def add_transaction(block: Block, transact: Transaction):
-    """Updates block with new transaction and new hash"""
+def add_transaction(block: Block, transact: Transaction) -> bool:
+    """Updates block with new transaction and hash (if valid). Returns transaction validity."""
     if not validate_transaction(transact):
-        return 
+        return False
     block.trans.append(transact)
     block.curr_hash = hash_block(block)
-
+    return True
 
 
 if __name__ == "__main__":    
