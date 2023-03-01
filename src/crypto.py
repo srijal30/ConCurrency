@@ -2,11 +2,8 @@
 File where all the crypto functionality will be stored
 """
 
-# TO DO:
-# change type of signature to hex
-
 from typing import Any, Tuple
-from schema_pb2 import Block
+from schema_pb2 import Block, Transaction
 from hashlib import sha256
 
 from cryptography.exceptions import InvalidSignature
@@ -28,6 +25,8 @@ PADDING = padding.PSS(
         )
 
 
+### HASHING
+
 def hash(*args: Any) -> str:
     """Hashes the input using sha256"""
     msg = ""
@@ -35,6 +34,14 @@ def hash(*args: Any) -> str:
         msg += str(arg)
     hash = sha256(msg.encode())
     return hash.hexdigest()
+
+
+def hash_transaction(tran: Transaction) -> str:
+    return hash(
+        tran.sender_pub_key,
+        tran.amount,
+        tran.receiver_pub_key
+    )
 
 
 def hash_block(block: Block) -> str:
@@ -45,6 +52,8 @@ def hash_block(block: Block) -> str:
         block.merkle_root
     )
 
+
+### RSA Functions
 
 def create_keys() -> Tuple[RSAPrivateKey, RSAPublicKey]:
     """
@@ -83,7 +92,8 @@ def create_signature(message: str, priv_key: RSAPrivateKey) -> str:
     return signature.hex()
 
 
-# TESTING
+### TESTING
+
 if __name__ == "__main__":
     priv, pub = create_keys()
     msg = "hello"

@@ -26,16 +26,18 @@ class Block(_message.Message):
     def __init__(self, prev_hash: _Optional[int] = ..., curr_hash: _Optional[int] = ..., nonce: _Optional[int] = ..., merkle_root: _Optional[int] = ..., trans: _Optional[_Iterable[_Union[Transaction, _Mapping]]] = ...) -> None: ...
 
 class Transaction(_message.Message):
-    __slots__ = ["sender_pub_key", "receiver_pub_key", "signature", "amount"]
+    __slots__ = ["hash", "sender_pub_key", "receiver_pub_key", "signature", "amount"]
+    HASH_FIELD_NUMBER: _ClassVar[int]
     SENDER_PUB_KEY_FIELD_NUMBER: _ClassVar[int]
     RECEIVER_PUB_KEY_FIELD_NUMBER: _ClassVar[int]
     SIGNATURE_FIELD_NUMBER: _ClassVar[int]
     AMOUNT_FIELD_NUMBER: _ClassVar[int]
+    hash: str
     sender_pub_key: str
     receiver_pub_key: str
     signature: str
     amount: int
-    def __init__(self, sender_pub_key: _Optional[str] = ..., receiver_pub_key: _Optional[str] = ..., signature: _Optional[str] = ..., amount: _Optional[int] = ...) -> None: ...
+    def __init__(self, hash: _Optional[str] = ..., sender_pub_key: _Optional[str] = ..., receiver_pub_key: _Optional[str] = ..., signature: _Optional[str] = ..., amount: _Optional[int] = ...) -> None: ...
 
 class Snapshot(_message.Message):
     __slots__ = []
