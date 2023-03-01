@@ -10,9 +10,7 @@ message BlockChain {
 message Block {
   uint64 prev_hash = 1;
   uint64 curr_hash = 2;
-
   uint64 nonce = 3;
-
   uint64 merkle_root = 4; //we can hash all the transactions and use that for the pow instead?
   repeated Transaction trans = 5;
 };
@@ -21,7 +19,6 @@ message Transaction {
   string hash = 1;
   string sender_pub_key = 2;
   string receiver_pub_key = 3;
-  
   string signature = 4;
   uint64 amount = 5;
 }
