@@ -18,12 +18,12 @@ class Block(_message.Message):
     NONCE_FIELD_NUMBER: _ClassVar[int]
     MERKLE_ROOT_FIELD_NUMBER: _ClassVar[int]
     TRANS_FIELD_NUMBER: _ClassVar[int]
-    prev_hash: int
-    curr_hash: int
+    prev_hash: str
+    curr_hash: str
     nonce: int
-    merkle_root: int
+    merkle_root: str
     trans: _containers.RepeatedCompositeFieldContainer[Transaction]
-    def __init__(self, prev_hash: _Optional[int] = ..., curr_hash: _Optional[int] = ..., nonce: _Optional[int] = ..., merkle_root: _Optional[int] = ..., trans: _Optional[_Iterable[_Union[Transaction, _Mapping]]] = ...) -> None: ...
+    def __init__(self, prev_hash: _Optional[str] = ..., curr_hash: _Optional[str] = ..., nonce: _Optional[int] = ..., merkle_root: _Optional[str] = ..., trans: _Optional[_Iterable[_Union[Transaction, _Mapping]]] = ...) -> None: ...
 
 class Transaction(_message.Message):
     __slots__ = ["hash", "sender_pub_key", "receiver_pub_key", "signature", "amount", "sequence"]
@@ -43,16 +43,21 @@ class Transaction(_message.Message):
 
 class Snapshot(_message.Message):
     __slots__ = ["accounts"]
+    class AccountsEntry(_message.Message):
+        __slots__ = ["key", "value"]
+        KEY_FIELD_NUMBER: _ClassVar[int]
+        VALUE_FIELD_NUMBER: _ClassVar[int]
+        key: str
+        value: Account
+        def __init__(self, key: _Optional[str] = ..., value: _Optional[_Union[Account, _Mapping]] = ...) -> None: ...
     ACCOUNTS_FIELD_NUMBER: _ClassVar[int]
-    accounts: _containers.RepeatedCompositeFieldContainer[Account]
-    def __init__(self, accounts: _Optional[_Iterable[_Union[Account, _Mapping]]] = ...) -> None: ...
+    accounts: _containers.MessageMap[str, Account]
+    def __init__(self, accounts: _Optional[_Mapping[str, Account]] = ...) -> None: ...
 
 class Account(_message.Message):
-    __slots__ = ["pub_key", "balance", "sequence"]
-    PUB_KEY_FIELD_NUMBER: _ClassVar[int]
+    __slots__ = ["balance", "sequence"]
     BALANCE_FIELD_NUMBER: _ClassVar[int]
     SEQUENCE_FIELD_NUMBER: _ClassVar[int]
-    pub_key: str
     balance: int
     sequence: int
-    def __init__(self, pub_key: _Optional[str] = ..., balance: _Optional[int] = ..., sequence: _Optional[int] = ...) -> None: ...
+    def __init__(self, balance: _Optional[int] = ..., sequence: _Optional[int] = ...) -> None: ...

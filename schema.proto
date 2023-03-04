@@ -1,5 +1,4 @@
 syntax = "proto3";
-
 package messages;
 
 //Blockchain Data Model
@@ -8,10 +7,12 @@ message BlockChain {
 };
 
 message Block {
-  uint64 prev_hash = 1;
-  uint64 curr_hash = 2;
+  string prev_hash = 1; //what type?
+  string curr_hash = 2; //what type?
+  
   uint64 nonce = 3;
-  uint64 merkle_root = 4; //we can hash all the transactions and use that for the pow instead?
+  
+  string merkle_root = 4; //we can hash all the transactions and use that for the pow instead?
   repeated Transaction trans = 5;
 };
 
@@ -27,11 +28,11 @@ message Transaction {
 }
 
 message Snapshot{
-  repeated Account accounts = 1;
+  // the key will be pub_key address in PEM format
+  map<string, Account> accounts = 1;
 }
 
 message Account{
-  string pub_key = 1;
-  uint64 balance = 2;
-  uint64 sequence = 3;
+  uint64 balance = 1;
+  uint64 sequence = 2;
 }
