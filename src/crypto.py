@@ -103,10 +103,14 @@ def serialize_public_key(pub_key: RSAPublicKey) -> str:
     return pem.decode()
 
 
-def load_public_key(pub_key: str) -> RSAPublicKey:
-    """Converts public key from PEM format to the object RSAPublicKey."""
-    return serialization.load_pem_public_key(pub_key.encode())
-
+def load_public_key(pub_key: str) -> RSAPublicKey | None:
+    """Converts public key from PEM format to the object RSAPublicKey. If input is not valid, returns None."""
+    try:
+        pub = serialization.load_pem_public_key(pub_key.encode())
+        assert isinstance(pub, RSAPublicKey)
+        return pub
+    except ValueError:
+        return None
 
 ### TESTING
 
@@ -128,4 +132,5 @@ if __name__ == "__main__":
 
     # unserialize the public key
     unserial = load_public_key(serial)
-    print(pub.public_numbers() == unserial.public_numbers())
+    if unserial:
+        print(pub.public_numbers() == unserial.public_numbers())
