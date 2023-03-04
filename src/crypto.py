@@ -7,7 +7,7 @@ from schema_pb2 import Block, Transaction
 from hashlib import sha256
 
 from cryptography.exceptions import InvalidSignature
-from cryptography.hazmat.primitives import hashes
+from cryptography.hazmat.primitives import hashes, serialization
 from cryptography.hazmat.primitives.asymmetric import padding
 from cryptography.hazmat.primitives.asymmetric.rsa import (
     generate_private_key,
@@ -15,7 +15,6 @@ from cryptography.hazmat.primitives.asymmetric.rsa import (
     RSAPublicKey
 )
 
-# should I change these? currently using the config from documentation.
 EXPONENT = 65537
 KEY_SIZE = 512
 ALGORITHM = hashes.SHA256()
@@ -23,6 +22,9 @@ PADDING = padding.PSS(
             mgf=padding.MGF1(ALGORITHM),
             salt_length=padding.PSS.MAX_LENGTH
         )
+ENCODING = serialization.Encoding.PEM
+PRIVATE_FORMAT = serialization.PrivateFormat.TraditionalOpenSSL
+PUBLIC_FORMAT = serialization.PublicFormat.SubjectPublicKeyInfo
 
 
 ### HASHING
@@ -68,29 +70,42 @@ def create_keys() -> Tuple[RSAPrivateKey, RSAPublicKey]:
     return (priv_key, pub_key)
 
 
-# TO DO: fix error where if user inputs str that cannout be converted to hex, an exception is raised
 def validate_signature(signature: str, message: str, pub_key : RSAPublicKey) -> bool:
-    """Validates an RSA signature using OpenSSL."""
+    """Validates an RSA signature using OpenSSL. Signaure must be valid hex string."""
     try:
         pub_key.verify(
-            signature=bytes.fromhex(signature), # converting from hex to bytes
+            signature=bytes.fromhex(signature), # converting from hexstring to bytes
             data=message.encode(), # converting from str to bytes
             padding=PADDING,
             algorithm=ALGORITHM
         )
         return True
-    except InvalidSignature:
+    except (ValueError, InvalidSignature):
         return False
 
 
 def create_signature(message: str, priv_key: RSAPrivateKey) -> str:
-    """Creates and returns an RSA signature using OpenSSL. The signature will be in hex."""
+    """Creates and returns an RSA signature using OpenSSL. The signature will be a hex string."""
     signature =  priv_key.sign(
         data=message.encode(),
         padding=PADDING,
         algorithm=ALGORITHM
     )
     return signature.hex()
+
+
+def serialize_public_key(pub_key: RSAPublicKey) -> str:
+    """Converts public key from RSAPublicKey object to PEM format."""
+    pem = pub_key.public_bytes(
+        encoding=ENCODING,
+        format=PUBLIC_FORMAT
+    )
+    return pem.decode()
+
+
+def load_public_key(pub_key: str) -> RSAPublicKey:
+    """Converts public key from PEM format to the object RSAPublicKey."""
+    return serialization.load_pem_public_key(pub_key.encode())
 
 
 ### TESTING
@@ -104,5 +119,13 @@ if __name__ == "__main__":
     print(validate_signature(sig, msg, pub))
 
     # wrong signature
-    fake_sig = hash("Hi")
+    fake_sig = 'hi'
     print(validate_signature(fake_sig, msg, pub))
+
+    # serialize the public key
+    serial = serialize_public_key(pub)
+    print(serial)
+
+    # unserialize the public key
+    unserial = load_public_key(serial)
+    print(pub.public_numbers() == unserial.public_numbers())
