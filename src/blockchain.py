@@ -2,24 +2,29 @@
 File where all the blockchain data model functionality will be stored
 """
 
-from schema_pb2 import Transaction, Block, BlockChain, Snapshot, Account
-from crypto import validate_signature
-from crypto import hash_block
+from schema_pb2 import Transaction, Block, BlockChain, Snapshot
+from crypto import hash_block, hash_transaction, validate_signature, load_public_key 
 
 
 ### BLOCK
-
-def validate_block(block: Block) -> bool:
-    """Validates block hash correctness and transaction validity"""
-    hash_correct : bool = block.curr_hash == hash_block(block)
-    for transaction in block.trans:
-        if not validate_transaction(transaction):
+def validate_block(cur_snapshot: Snapshot, block: Block) -> bool:
+    """Validates block hash correctness and transaction validity. Assumes cur_snapshot is valid."""
+    if block.curr_hash != hash_block(block):
+        return False
+    added_transactions = []
+    for tran in block.trans:
+         # check if transaction is valid and amount is valid
+        added_transactions.append(tran)
+        if not validate_transaction(cur_snapshot, tran) or not replay_transaction(cur_snapshot, tran):
+            # revert
+            for added_tran in reversed(added_transactions):
+                undo_transaction(cur_snapshot, added_tran)
             return False
-    return hash_correct
+    return True
 
 
 def add_transaction(block: Block, transact: Transaction) -> bool:
-    """Updates block with new transaction and hash (if valid). Returns transaction validity."""
+    """Adds transaction to the block if valid. Also updates hash. Returns true if transaction is successfully added."""
     if not validate_transaction(transact):
         return False
     block.trans.append(transact)
@@ -30,31 +35,75 @@ def add_transaction(block: Block, transact: Transaction) -> bool:
 ### TRANSACTION
 
 def validate_transaction(tran: Transaction) -> bool:
-    """Validates a transaction. Returns true or false depending on the result."""
-    # stub
-    correct_transaction: bool = tran.hash() == hash(tran.receiver_pub_key, tran.signature, tran.amount, tran.sequence)
-    return correct_transaction
+    # validate the hash
+    if not tran.hash == hash_transaction(tran):
+        return False
+    # validate the signature
+    if not validate_signature(tran.signature, tran.hash, load_public_key(tran.sender_pub_key)):
+        return False
+    return True
 
 
 ### BLOCKCHAIN
 
-def verify_chain(chain: BlockChain) -> bool:
-    ### Loop through blockchain array and validate each block
+def validate_chain(chain: BlockChain) -> bool:
+    # Loop through blockchain array and validate each block
+    cur_snapshot = Snapshot()
+    prev_hash = None
+    for block in chain.blocks:
+        # Check if previos hash matches the hash of the previous block
+        if prev_hash is not None and block.prev_hash != prev_hash:
+            return False
 
-    pass
+        # Check if the block is valid
+        if not validate_block(cur_snapshot, block):
+            return False
 
-def add_block(block: Block, chain: BlockChain):
-    ### Add block to blockchain
-    pass
+        prev_hash = block.curr_hash
+    return True
+    
+
+def add_block(snapshot: Snapshot, block: Block, chain: BlockChain) -> bool:
+    """Adds block to the blockchain if valid. Returns whether operation was success."""    
+    # Check block validity
+    if not validate_block(snapshot, block):
+        return False
+    # Update the blockchain with new block
+    chain.blocks.append(block)
+    return True
 
 
 ### SNAPSHOT
 
-def replay_block(snapshot: Snapshot, block: Block) ->  None:  # what do we return
-    pass
+def replay_transaction(snapshot: Snapshot, tran: Transaction) ->  bool:
+    """Returns true if valid transaction is added successfully."""
+    # sender has sequence incremented
+    snapshot.accounts[tran.sender_pub_key].sequence += 1
+    # send amount to receiver if sender has enough
+    if snapshot.accounts[tran.sender_pub_key].balance >= tran.amount:
+        snapshot.accounts[tran.receiver_pub_key].balance += tran.amount
+        snapshot.accounts[tran.sender_pub_key].balance -= tran.amount
+        return True
+    else:
+        return False
+
+
+def undo_transaction(snapshot: Snapshot, tran: Transaction) -> None:
+    """Undoes the effects of a transaction on snapshot."""
+    # Sender gets their amount back sequence decremented
+    snapshot.accounts[tran.sender_pub_key].balance += tran.amount
+    snapshot.accounts[tran.sender_pub_key].sequence -= 1
+    # Reciever's balance is deducted
+    snapshot.accounts[tran.receiver_pub_key].balance -= tran.amount
 
 
 ### TESTING
 
 if __name__ == "__main__":    
-    pass
+    blockchain = BlockChain()
+    newBlock = Block(
+        hash="adflksadjfl;sdjlsdf"
+    )
+    blockchain.blocks.append(newBlock)
+
+    print(validate_chain(blockchain))
