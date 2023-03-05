@@ -3,7 +3,7 @@ package messages;
 
 //Blockchain Data Model
 message BlockChain {
-  repeated Block block = 1;
+  repeated Block blocks = 1;
 };
 
 message Block {

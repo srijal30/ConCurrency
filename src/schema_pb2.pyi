@@ -6,10 +6,10 @@ from typing import ClassVar as _ClassVar, Iterable as _Iterable, Mapping as _Map
 DESCRIPTOR: _descriptor.FileDescriptor
 
 class BlockChain(_message.Message):
-    __slots__ = ["block"]
-    BLOCK_FIELD_NUMBER: _ClassVar[int]
-    block: _containers.RepeatedCompositeFieldContainer[Block]
-    def __init__(self, block: _Optional[_Iterable[_Union[Block, _Mapping]]] = ...) -> None: ...
+    __slots__ = ["blocks"]
+    BLOCKS_FIELD_NUMBER: _ClassVar[int]
+    blocks: _containers.RepeatedCompositeFieldContainer[Block]
+    def __init__(self, blocks: _Optional[_Iterable[_Union[Block, _Mapping]]] = ...) -> None: ...
 
 class Block(_message.Message):
     __slots__ = ["prev_hash", "curr_hash", "nonce", "merkle_root", "trans"]
