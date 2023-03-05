@@ -2,7 +2,7 @@
 File where all the crypto functionality will be stored
 """
 
-from typing import Any, Tuple
+from typing import Any, Tuple, List
 from schema_pb2 import Block, Transaction
 from hashlib import sha256
 
@@ -55,6 +55,16 @@ def hash_transaction(tran: Transaction) -> str:
         tran.sequence
     )
 
+def merkle_root(transactions: List[Transaction]) -> str:
+    """Recursively creates the merkle root and returns it."""
+    transaction_hashes = [t.hash for t in transactions]
+    def root_helper(hashes: List[str]) -> str:
+        if len(hashes) == 1:
+            return hashes[0]
+        new_len = len(hashes)/2
+        for i in range(new_len):
+            hashes[i] = hash(hashes[i] + hashes.pop(i+1))
+    return root_helper(transaction_hashes)
 
 ### RSA Functions
 
