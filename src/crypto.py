@@ -112,6 +112,7 @@ def load_public_key(pub_key: str) -> RSAPublicKey | None:
     except ValueError:
         return None
 
+
 ### TESTING
 
 if __name__ == "__main__":
