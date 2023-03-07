@@ -15,10 +15,11 @@ def validate_block(cur_snapshot: Snapshot, block: Block) -> bool:
     for tran in block.trans:
          # check if transaction is valid and amount is valid
         added_transactions.append(tran)
-        if not validate_transaction(cur_snapshot, tran) or not replay_transaction(cur_snapshot, tran):
+        if not validate_transaction(tran) or not replay_transaction(cur_snapshot, tran):
             # revert
             for added_tran in reversed(added_transactions):
-                undo_transaction(cur_snapshot, added_tran)
+                if not undo_transaction(cur_snapshot, added_tran):
+                    return False
             return False
     return True
 
@@ -88,22 +89,13 @@ def replay_transaction(snapshot: Snapshot, tran: Transaction) ->  bool:
         return False
 
 
-def undo_transaction(snapshot: Snapshot, tran: Transaction) -> None:
-    """Undoes the effects of a transaction on snapshot."""
+def undo_transaction(snapshot: Snapshot, tran: Transaction) -> bool:
+    """Undoes the effects of a transaction on snapshot. Returns false if negative amount."""
+    if snapshot.accounts[tran.receiver_pub_key].balance < tran.amount:
+        return False
     # Sender gets their amount back sequence decremented
-    snapshot.accounts[tran.sender_pub_key].balance += tran.amount
     snapshot.accounts[tran.sender_pub_key].sequence -= 1
+    snapshot.accounts[tran.sender_pub_key].balance += tran.amount
     # Reciever's balance is deducted
     snapshot.accounts[tran.receiver_pub_key].balance -= tran.amount
-
-
-### TESTING
-
-if __name__ == "__main__":    
-    blockchain = BlockChain()
-    newBlock = Block(
-        hash="adflksadjfl;sdjlsdf"
-    )
-    blockchain.blocks.append(newBlock)
-
-    print(validate_chain(blockchain))
+    return True

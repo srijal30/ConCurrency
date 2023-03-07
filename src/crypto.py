@@ -55,16 +55,18 @@ def hash_transaction(tran: Transaction) -> str:
         tran.sequence
     )
 
-def merkle_root(transactions: List[Transaction]) -> str:
-    """Recursively creates the merkle root and returns it."""
-    transaction_hashes = [t.hash for t in transactions]
+
+def generate_merkle_root(block: Block) -> None:
+    """Recursively creates the merkle root for a block and sets it."""
+    transaction_hashes = [t.hash for t in block.trans]
     def root_helper(hashes: List[str]) -> str:
         if len(hashes) == 1:
             return hashes[0]
-        new_len = len(hashes)/2
+        new_len = int(len(hashes)/2)
         for i in range(new_len):
             hashes[i] = hash(hashes[i] + hashes.pop(i+1))
-    return root_helper(transaction_hashes)
+        return root_helper(hashes)
+    block.merkle_root = root_helper(transaction_hashes)
 
 ### RSA Functions
 
