@@ -40,12 +40,20 @@ def validate_transaction(tran: Transaction) -> bool:
 
 def verify_chain(chain: BlockChain) -> bool:
     ### Loop through blockchain array and validate each block
-
-    pass
+    for block in chain.block:
+        if not validate_block(block):
+            print("bad block")
+            return False
+    
+    ### At this point chain is valid
+    print("validdddd")
+    return True
 
 def add_block(block: Block, chain: BlockChain):
     ### Add block to blockchain
-    pass
+    ### One line solution????? wow what is this i am definitely missing something
+    chain.block.append(Block)
+    return None
 
 
 ### SNAPSHOT
