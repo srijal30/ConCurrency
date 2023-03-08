@@ -1,5 +1,5 @@
 """
-File where all the crypto functionality will be stored
+File where all the cryptography functionality will be stored
 """
 
 from typing import Any, Tuple, List

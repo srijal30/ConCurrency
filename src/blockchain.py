@@ -36,6 +36,7 @@ def add_transaction(block: Block, transact: Transaction) -> bool:
 ### TRANSACTION
 
 def validate_transaction(tran: Transaction) -> bool:
+    """Validates a transaction's signature and hash."""
     # validate the hash
     if not tran.hash == hash_transaction(tran):
         return False
@@ -55,11 +56,9 @@ def validate_chain(chain: BlockChain) -> bool:
         # Check if previos hash matches the hash of the previous block
         if prev_hash is not None and block.prev_hash != prev_hash:
             return False
-
         # Check if the block is valid
         if not validate_block(cur_snapshot, block):
             return False
-
         prev_hash = block.curr_hash
     return True
     

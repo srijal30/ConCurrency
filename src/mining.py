@@ -69,15 +69,16 @@ while block_cntr < BLOCK_COUNT:
     block_cntr += 1
     # print(block_cntr)
 
-    # print block
-    # print(f"BLOCK #{block_cntr}:\n{str(chain.blocks[-1])}\n")
+    # print block (simulation)
+    print(f"BLOCK #{block_cntr}:\n{str(chain.blocks[-1])}\n")
+    input("PRESS ENTER")
 
 
 # print the blockchain
-print(chain)
+# print(chain)
 
 # check validity
-print(validate_chain(chain))
+# print(validate_chain(chain))
 
 
 # mess with the chain's amount
