@@ -9,6 +9,7 @@ from random import sample, randint
 DIFFICULTY = 4  # number of zeroes required
 USER_COUNT = 10
 BLOCK_COUNT = 20
+REWARD = 1 #amount of coin rewarded per successful hash
 
 
 users = [create_keys() for i in range(USER_COUNT)]
@@ -40,6 +41,8 @@ def random_transaction():
 # mines a block until it reaches desired difficulty
 def mine(block: Block) -> None:
     block.nonce = 0
+    ##reward = Transaction(hash())
+    block.trans.append()
     block.curr_hash = hash_block(block)
     while block.curr_hash[0:DIFFICULTY] != "0"*DIFFICULTY:
         block.nonce += 1
