@@ -26,6 +26,11 @@ ENCODING = serialization.Encoding.PEM
 PRIVATE_FORMAT = serialization.PrivateFormat.TraditionalOpenSSL
 PUBLIC_FORMAT = serialization.PublicFormat.SubjectPublicKeyInfo
 
+with open("keys/minting_pub.pem") as file:
+    MINTING_PUB = file.read()
+with open("keys/minting_priv.pem") as file:
+    MINTING_PRIV = file.read()
+
 
 ### HASHING
 
@@ -68,6 +73,7 @@ def generate_merkle_root(block: Block) -> None:
         return root_helper(hashes)
     block.merkle_root = root_helper(transaction_hashes)
 
+
 ### RSA Functions
 
 def create_keys() -> Tuple[RSAPrivateKey, RSAPublicKey]:
@@ -96,10 +102,10 @@ def validate_signature(signature: str, message: str, pub_key : RSAPublicKey) -> 
         return False
 
 
-def create_signature(message: str, priv_key: RSAPrivateKey) -> str:
+def create_signature(hash: str, priv_key: RSAPrivateKey) -> str:
     """Creates and returns an RSA signature using OpenSSL. The signature will be a hex string."""
     signature =  priv_key.sign(
-        data=message.encode(),
+        data=hash.encode(),
         padding=PADDING,
         algorithm=ALGORITHM
     )
@@ -115,6 +121,16 @@ def serialize_public_key(pub_key: RSAPublicKey) -> str:
     return pem.decode()
 
 
+def load_private_key(priv_key: str) -> RSAPrivateKey | None:
+    """Converts private key from PEM format to the object RSAPrivateKey. If input is not valid, returns None."""
+    try:
+        priv = serialization.load_pem_private_key(priv_key.encode(), password=b'mypassword')
+        assert isinstance(priv, RSAPrivateKey)
+        return priv
+    except ValueError:
+        return None
+
+
 def load_public_key(pub_key: str) -> RSAPublicKey | None:
     """Converts public key from PEM format to the object RSAPublicKey. If input is not valid, returns None."""
     try:
@@ -123,27 +139,3 @@ def load_public_key(pub_key: str) -> RSAPublicKey | None:
         return pub
     except ValueError:
         return None
-
-
-### TESTING
-
-if __name__ == "__main__":
-    priv, pub = create_keys()
-    msg = "hello"
-    sig = create_signature(msg, priv)
-    
-    # right signature
-    print(validate_signature(sig, msg, pub))
-
-    # wrong signature
-    fake_sig = 'hi'
-    print(validate_signature(fake_sig, msg, pub))
-
-    # serialize the public key
-    serial = serialize_public_key(pub)
-    print(serial)
-
-    # unserialize the public key
-    unserial = load_public_key(serial)
-    if unserial:
-        print(pub.public_numbers() == unserial.public_numbers())
