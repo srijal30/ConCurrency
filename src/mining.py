@@ -34,6 +34,8 @@ genesis.curr_hash = hash_block(genesis)
 add_block(snapshot, genesis, chain)
 print("genesis done\n\n")
 
+users = [create_keys() for i in range(USER_COUNT)]
+transaction_pool = []
 # creates valid transaction randomly
 def random_transaction():
     sender, receiver = sample(users, 2)
