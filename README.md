@@ -18,7 +18,7 @@ pip install -r requirements.txt
 ```
 * (Optional) To compile the ProtoBuf files locally, first make sure you have [protoc](https://github.com/protocolbuffers/protobuf/releases) installed. Then call this command:
 ```
-protoc schema.proto -I=. --python_out=src --pyi_out=src
+protoc schema.proto -I=. --python_out=src/proto --pyi_out=src/proto
 ```
  
 
