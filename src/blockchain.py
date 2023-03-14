@@ -3,7 +3,7 @@ File where all the blockchain data model functionality will be stored
 """
 
 from proto.schema_pb2 import Transaction, Block, BlockChain, Snapshot
-from crypto import hash_block, hash_transaction, validate_signature, load_public_key, MINTING_PUB
+from crypto import hash_block, hash_transaction, validate_signature, load_public_key
 
 
 ### BLOCK
@@ -108,3 +108,13 @@ def undo_transaction(snapshot: Snapshot, tran: Transaction) -> bool:
     # Reciever's balance is deducted
     snapshot.accounts[tran.receiver_pub_key].balance -= tran.amount
     return True
+
+def play_transaction(snapshot: Snapshot, tran: Transaction) -> tuple[bool, Snapshot]:
+    """Applies transaction to a snapshot. !!!TO BE USED ON UNCOMMITTED SNAPSHOTS ONLY!!!"""
+    #Validates transaction signature, sequence, and validity
+    if not replay_transaction or not validate_transaction:
+        return (False, snapshot)
+    
+    snapshot.accounts[tran.sender_pub_key].balance -= tran.amount
+    snapshot.accounts[tran.receiver_pub_key].balance += tran.amount
+    return (True, snapshot)

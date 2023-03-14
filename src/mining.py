@@ -22,14 +22,9 @@ BLOCK_COUNT = 1
 REWARD = 100 #amount of coin rewarded per successful hash
 
 
-miner_priv, miner_pub = create_keys()
-print("THE MINER IS:", serialize_public_key(miner_pub))
-users = [create_keys() for i in range(USER_COUNT)]
-transaction_pool = []
 
-# committed
+
 snapshot = Snapshot()
-
 
 
 
@@ -59,15 +54,18 @@ while block_cntr < BLOCK_COUNT:
     #create new block
     block = Block()
     block.prev_hash = chain.blocks[-1].curr_hash
-    # uncommited                        
-    uncommitted_snapshot = Snapshot()   # add 1-5 transactions to the block
+
+    # committed
+    commit_snapshot = Snapshot()    # uncommited                        
+    uncommitted_snapshot = Snapshot()   
+
+    # add 1-5 transactions to the block
     cnt = 0
     for i in range(cnt):
         randomtrans = random_transaction()
-        validate_transaction(random_transaction)
-        replay_transaction(uncommitted_snapshot, randomtrans)
+        uncommitted_snapshot = play_transaction(uncommitted_snapshot, randomtrans)
 
-
+    commit_snapshot = uncommitted_snapshot
     # add reward
     #block.trans.append(Transaction(
     #    sender_pub_key = MINTING_PUB,
@@ -75,17 +73,19 @@ while block_cntr < BLOCK_COUNT:
     #    amount = REWARD,
     #    sequence = snapshot.accounts[MINTING_PUB].sequence
     #))
-    #block.trans[-1].hash = hash_transaction(block.trans[-1])
-    #block.trans[-1].signature = create_signature(block.trans[-1].hash, load_private_key(MINTING_PRIV))
+    
+
+    # block.trans[-1].hash = hash_transaction(block.trans[-1])
+    # block.trans[-1].signature = create_signature(block.trans[-1].hash, load_private_key(MINTING_PRIV))
 
     ## generate the merkle root
-    #generate_merkle_root(block)
+    generate_merkle_root(block)
 
     # mine the block (find cur_hash and nonce)
     mine(block)
 
     # add it to the chain
-    print("SUCCESS:",  add_block(snapshot, block, chain))
+    print("SUCCESS:",  add_block(commit_snapshot, block, chain))
     input()
     block_cntr += 1
     # print(block_cntr)
