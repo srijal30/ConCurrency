@@ -2,7 +2,7 @@
 File where all the blockchain data model functionality will be stored
 """
 
-from schema_pb2 import Transaction, Block, BlockChain, Snapshot
+from proto.schema_pb2 import Transaction, Block, BlockChain, Snapshot
 from crypto import hash_block, hash_transaction, validate_signature, load_public_key, MINTING_PUB
 
 
@@ -44,7 +44,6 @@ def add_transaction(block: Block, transact: Transaction) -> bool:
 
 
 ### TRANSACTION
-
 def validate_transaction(tran: Transaction) -> bool:
     """Validates a transaction's signature and hash."""
     # validate the hash
@@ -57,7 +56,6 @@ def validate_transaction(tran: Transaction) -> bool:
 
 
 ### BLOCKCHAIN
-
 def validate_chain(chain: BlockChain) -> bool:
     # Loop through blockchain array and validate each block
     cur_snapshot = Snapshot()
@@ -85,7 +83,7 @@ def add_block(snapshot: Snapshot, block: Block, chain: BlockChain) -> bool:
 
 ### SNAPSHOT
 def replay_transaction(snapshot: Snapshot, tran: Transaction) ->  bool:
-    """Returns true if transaction added to Snapshot successfully."""
+    """Checks if sequence number is correct, and that the exchange of coins is valid. Returns true if transaction added to Snapshot successfully."""
     # check if sequence is correct
     if tran.sequence != snapshot.accounts[tran.sender_pub_key].sequence:
         return False

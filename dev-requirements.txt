@@ -3,3 +3,4 @@ mypy-extensions==1.0.0
 tomli==2.0.1
 typing_extensions==4.5.0
 types-protobuf==4.22.0.0
+grpcio-tools==1.51.3

@@ -3,7 +3,7 @@ File where all the cryptography functionality will be stored
 """
 
 from typing import Any, Tuple, List
-from schema_pb2 import Block, Transaction
+from proto.schema_pb2 import Block, Transaction
 from hashlib import sha256
 
 from cryptography.exceptions import InvalidSignature
@@ -25,7 +25,6 @@ PADDING = padding.PSS(
 ENCODING = serialization.Encoding.PEM
 PRIVATE_FORMAT = serialization.PrivateFormat.TraditionalOpenSSL
 PUBLIC_FORMAT = serialization.PublicFormat.SubjectPublicKeyInfo
-
 with open("keys/minting_pub.pem") as file:
     MINTING_PUB = file.read()
 with open("keys/minting_priv.pem") as file:

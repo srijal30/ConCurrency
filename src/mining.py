@@ -1,6 +1,6 @@
 """Example of a mining app."""
 
-from schema_pb2 import *
+from proto.schema_pb2 import *
 from blockchain import *
 from crypto import *
 from random import sample, randint
@@ -26,7 +26,13 @@ miner_priv, miner_pub = create_keys()
 print("THE MINER IS:", serialize_public_key(miner_pub))
 users = [create_keys() for i in range(USER_COUNT)]
 transaction_pool = []
+
+# committed
 snapshot = Snapshot()
+
+
+
+
 chain = BlockChain()
 genesis = Block(prev_hash="0"*64, merkle_root="0"*64, trans=[])
 genesis.curr_hash = hash_block(genesis)
@@ -53,24 +59,27 @@ while block_cntr < BLOCK_COUNT:
     #create new block
     block = Block()
     block.prev_hash = chain.blocks[-1].curr_hash
-    
-    # add 1-5 transactions to the block
-    cnt = randint(1, 6)
+    # uncommited                        
+    uncommitted_snapshot = Snapshot()   # add 1-5 transactions to the block
+    cnt = 0
     for i in range(cnt):
-        block.trans.append(random_transaction())
+        randomtrans = random_transaction()
+        validate_transaction(random_transaction)
+        replay_transaction(uncommitted_snapshot, randomtrans)
+
 
     # add reward
-    block.trans.append(Transaction(
-        sender_pub_key = MINTING_PUB,
-        receiver_pub_key = serialize_public_key(miner_pub),
-        amount = REWARD,
-        sequence = snapshot.accounts[MINTING_PUB].sequence
-    ))
-    block.trans[-1].hash = hash_transaction(block.trans[-1])
-    block.trans[-1].signature = create_signature(block.trans[-1].hash, load_private_key(MINTING_PRIV))
+    #block.trans.append(Transaction(
+    #    sender_pub_key = MINTING_PUB,
+    #    receiver_pub_key = serialize_public_key(miner_pub),
+    #    amount = REWARD,
+    #    sequence = snapshot.accounts[MINTING_PUB].sequence
+    #))
+    #block.trans[-1].hash = hash_transaction(block.trans[-1])
+    #block.trans[-1].signature = create_signature(block.trans[-1].hash, load_private_key(MINTING_PRIV))
 
-    # generate the merkle root
-    generate_merkle_root(block)
+    ## generate the merkle root
+    #generate_merkle_root(block)
 
     # mine the block (find cur_hash and nonce)
     mine(block)
