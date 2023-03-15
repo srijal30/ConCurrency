@@ -59,7 +59,7 @@ while block_cntr < BLOCK_COUNT:
 
     # committed
     commit_snapshot = Snapshot()    # uncommited                        
-    uncommitted_snapshot = commit_snapshot
+    uncommitted_snapshot = Snapshot()
 
     transList : List[Transaction] = []
 
