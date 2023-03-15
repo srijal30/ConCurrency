@@ -9,17 +9,12 @@ from crypto import hash_block, hash_transaction, validate_signature, load_public
 ### BLOCK
 def validate_block(cur_snapshot: Snapshot, block: Block) -> bool:
     """Validates block hash correctness and transaction validity. Assumes cur_snapshot is valid."""
-    reward_transaction : Transaction = None
+    reward_transaction : Transaction
     added_transactions = []
     if block.curr_hash != hash_block(block):
         return False
     for tran in block.trans:
         added_transactions.append(tran)
-        if tran.sender_pub_key == MINTING_PUB:
-            if reward_transaction:
-                return False
-            else:
-                reward_transaction = tran
         # check if transaction is valid and amount is valid
         if not validate_transaction(tran) or not replay_transaction(cur_snapshot, tran):
             print("RUNS HERE") 
@@ -28,9 +23,6 @@ def validate_block(cur_snapshot: Snapshot, block: Block) -> bool:
                 if not undo_transaction(cur_snapshot, added_tran):
                     return False
             return False
-    # add the mining reward
-    if reward_transaction:
-        cur_snapshot.accounts[reward_transaction.receiver_pub_key] += reward_transaction.amount
     return True
 
 
@@ -112,7 +104,7 @@ def undo_transaction(snapshot: Snapshot, tran: Transaction) -> bool:
 def play_transaction(snapshot: Snapshot, tran: Transaction) -> tuple[bool, Snapshot]:
     """Applies transaction to a snapshot. !!!TO BE USED ON UNCOMMITTED SNAPSHOTS ONLY!!!"""
     #Validates transaction signature, sequence, and validity
-    if not replay_transaction or not validate_transaction:
+    if not replay_transaction(snapshot, tran) or not validate_transaction(tran):
         return (False, snapshot)
     
     snapshot.accounts[tran.sender_pub_key].balance -= tran.amount

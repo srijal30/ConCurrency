@@ -58,8 +58,6 @@ def hash_transaction(tran: Transaction) -> str:
 def generate_merkle_root(block: Block) -> None:
     """Recursively creates the merkle root for a block and sets it."""
     transaction_hashes = [t.hash for t in block.trans]
-    print(len(transaction_hashes))
-    print(str(transaction_hashes))
     def root_helper(hashes: List[str]) -> str:
         if len(hashes) == 1:
             return hashes[0]

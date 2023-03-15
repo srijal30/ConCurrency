@@ -18,7 +18,7 @@ def mine(block: Block) -> None:
 ###TESTING
 DIFFICULTY = 4  # number of zeroes required
 USER_COUNT = 10
-BLOCK_COUNT = 1
+BLOCK_COUNT = 20
 REWARD = 100 #amount of coin rewarded per successful hash
 
 
@@ -35,7 +35,7 @@ add_block(snapshot, genesis, chain)
 print("genesis done\n\n")
 
 users = [create_keys() for i in range(USER_COUNT)]
-transaction_pool = []
+transaction_pool : List[Transaction]= []
 # creates valid transaction randomly
 def random_transaction():
     sender, receiver = sample(users, 2)
@@ -59,13 +59,13 @@ while block_cntr < BLOCK_COUNT:
 
     # committed
     commit_snapshot = Snapshot()    # uncommited                        
-    uncommitted_snapshot = Snapshot()   
+    uncommitted_snapshot = commit_snapshot
 
     # add 1-5 transactions to the block
-    cnt = 0
+    cnt = 5
     for i in range(cnt):
         randomtrans = random_transaction()
-        uncommitted_snapshot = play_transaction(uncommitted_snapshot, randomtrans)
+        uncommitted_snapshot = play_transaction(uncommitted_snapshot, randomtrans)[1]
 
     commit_snapshot = uncommitted_snapshot
     # add reward
