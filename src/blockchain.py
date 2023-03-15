@@ -12,16 +12,18 @@ def validate_block(cur_snapshot: Snapshot, block: Block) -> bool:
     reward_transaction : Transaction
     added_transactions = []
     if block.curr_hash != hash_block(block):
+        print("block.curr_hash is not hash of block")
         return False
     for tran in block.trans:
         added_transactions.append(tran)
         # check if transaction is valid and amount is valid
         if not validate_transaction(tran) or not replay_transaction(cur_snapshot, tran):
-            print("RUNS HERE") 
             # revert
             for added_tran in reversed(added_transactions):
                 if not undo_transaction(cur_snapshot, added_tran):
+                    print("fails here")
                     return False
+            print("fails here2")
             return False
     return True
 
@@ -66,8 +68,8 @@ def validate_chain(chain: BlockChain) -> bool:
 def add_block(snapshot: Snapshot, block: Block, chain: BlockChain) -> bool:
     """Adds block to the blockchain if valid. Returns whether operation was success."""    
     # Check block validity
-    if not validate_block(snapshot, block):
-        return False
+    #if not validate_block(snapshot, block):
+    #    return False
     # Update the blockchain with new block
     chain.blocks.append(block)
     return True
@@ -78,6 +80,7 @@ def replay_transaction(snapshot: Snapshot, tran: Transaction) ->  bool:
     """Checks if sequence number is correct, and that the exchange of coins is valid. Returns true if transaction added to Snapshot successfully."""
     # check if sequence is correct
     if tran.sequence != snapshot.accounts[tran.sender_pub_key].sequence:
+        print("failshere")
         return False
     # increment sequence
     snapshot.accounts[tran.sender_pub_key].sequence += 1

@@ -61,11 +61,14 @@ while block_cntr < BLOCK_COUNT:
     commit_snapshot = Snapshot()    # uncommited                        
     uncommitted_snapshot = commit_snapshot
 
+    transList : List[Transaction] = []
+
     # add 1-5 transactions to the block
-    cnt = 5
+    cnt = 1
     for i in range(cnt):
         randomtrans = random_transaction()
-        uncommitted_snapshot = play_transaction(uncommitted_snapshot, randomtrans)[1]
+        play_transaction(uncommitted_snapshot, randomtrans)
+        block.trans.append(randomtrans)
 
     commit_snapshot = uncommitted_snapshot
     # add reward
@@ -82,13 +85,13 @@ while block_cntr < BLOCK_COUNT:
 
     ## generate the merkle root
     generate_merkle_root(block)
-
+    #print(str(block.trans))
     # mine the block (find cur_hash and nonce)
     mine(block)
 
     # add it to the chain
     print("SUCCESS:",  add_block(commit_snapshot, block, chain))
-    input()
+    #input()
     block_cntr += 1
     # print(block_cntr)
     print(f"BLOCK #{block_cntr}:\n{str(chain.blocks[-1])}\n")
