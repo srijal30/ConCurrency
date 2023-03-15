@@ -49,7 +49,7 @@ def random_transaction():
     t.signature = create_signature(t.hash, sender[0])
     return t        
 
-
+commit_snapshot = Snapshot()
 # mine 20 blocks
 block_cntr = 0
 while block_cntr < BLOCK_COUNT:
@@ -58,7 +58,6 @@ while block_cntr < BLOCK_COUNT:
     block.prev_hash = chain.blocks[-1].curr_hash
 
     # committed
-    commit_snapshot = Snapshot()    # uncommited                        
     uncommitted_snapshot = Snapshot()
 
     transList : List[Transaction] = []
