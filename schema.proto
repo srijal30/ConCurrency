@@ -14,6 +14,10 @@ message Block {
   
   string merkle_root = 4; //we can hash all the transactions and use that for the pow instead?
   repeated Transaction trans = 5;
+
+  string miner = 6;
+  uint64 mining_reward = 7;
+  uint64 difficulty = 8;
 };
 
 message Transaction {
