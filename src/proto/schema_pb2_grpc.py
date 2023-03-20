@@ -2,3 +2,171 @@
 """Client and server classes corresponding to protobuf-defined services."""
 import grpc
 
+import schema_pb2 as schema__pb2
+
+
+class MiningNodeStub(object):
+    """/Networking Model
+    """
+
+    def __init__(self, channel):
+        """Constructor.
+
+        Args:
+            channel: A grpc.Channel.
+        """
+        self.get_block = channel.unary_unary(
+                '/messages.MiningNode/get_block',
+                request_serializer=schema__pb2.GetBlockRequest.SerializeToString,
+                response_deserializer=schema__pb2.GetBlockReply.FromString,
+                )
+        self.announce_block = channel.unary_unary(
+                '/messages.MiningNode/announce_block',
+                request_serializer=schema__pb2.AnnounceBlockRequest.SerializeToString,
+                response_deserializer=schema__pb2.AnnounceBlockReply.FromString,
+                )
+        self.send_transaction = channel.unary_unary(
+                '/messages.MiningNode/send_transaction',
+                request_serializer=schema__pb2.SendTransactionRequest.SerializeToString,
+                response_deserializer=schema__pb2.SendTransactionReply.FromString,
+                )
+        self.send_blockchain = channel.unary_stream(
+                '/messages.MiningNode/send_blockchain',
+                request_serializer=schema__pb2.SendBlockchainRequest.SerializeToString,
+                response_deserializer=schema__pb2.SendBlockchainReply.FromString,
+                )
+
+
+class MiningNodeServicer(object):
+    """/Networking Model
+    """
+
+    def get_block(self, request, context):
+        """returns a list of requested blocks
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def announce_block(self, request, context):
+        """announces a newly mined block
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def send_transaction(self, request, context):
+        """sends a transaction over the network
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def send_blockchain(self, request, context):
+        """sends the entire blockchain over the network
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+
+def add_MiningNodeServicer_to_server(servicer, server):
+    rpc_method_handlers = {
+            'get_block': grpc.unary_unary_rpc_method_handler(
+                    servicer.get_block,
+                    request_deserializer=schema__pb2.GetBlockRequest.FromString,
+                    response_serializer=schema__pb2.GetBlockReply.SerializeToString,
+            ),
+            'announce_block': grpc.unary_unary_rpc_method_handler(
+                    servicer.announce_block,
+                    request_deserializer=schema__pb2.AnnounceBlockRequest.FromString,
+                    response_serializer=schema__pb2.AnnounceBlockReply.SerializeToString,
+            ),
+            'send_transaction': grpc.unary_unary_rpc_method_handler(
+                    servicer.send_transaction,
+                    request_deserializer=schema__pb2.SendTransactionRequest.FromString,
+                    response_serializer=schema__pb2.SendTransactionReply.SerializeToString,
+            ),
+            'send_blockchain': grpc.unary_stream_rpc_method_handler(
+                    servicer.send_blockchain,
+                    request_deserializer=schema__pb2.SendBlockchainRequest.FromString,
+                    response_serializer=schema__pb2.SendBlockchainReply.SerializeToString,
+            ),
+    }
+    generic_handler = grpc.method_handlers_generic_handler(
+            'messages.MiningNode', rpc_method_handlers)
+    server.add_generic_rpc_handlers((generic_handler,))
+
+
+ # This class is part of an EXPERIMENTAL API.
+class MiningNode(object):
+    """/Networking Model
+    """
+
+    @staticmethod
+    def get_block(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/messages.MiningNode/get_block',
+            schema__pb2.GetBlockRequest.SerializeToString,
+            schema__pb2.GetBlockReply.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
+    def announce_block(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/messages.MiningNode/announce_block',
+            schema__pb2.AnnounceBlockRequest.SerializeToString,
+            schema__pb2.AnnounceBlockReply.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
+    def send_transaction(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/messages.MiningNode/send_transaction',
+            schema__pb2.SendTransactionRequest.SerializeToString,
+            schema__pb2.SendTransactionReply.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
+    def send_blockchain(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_stream(request, target, '/messages.MiningNode/send_blockchain',
+            schema__pb2.SendBlockchainRequest.SerializeToString,
+            schema__pb2.SendBlockchainReply.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)

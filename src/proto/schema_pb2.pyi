@@ -13,6 +13,16 @@ class Account(_message.Message):
     sequence: int
     def __init__(self, balance: _Optional[int] = ..., sequence: _Optional[int] = ...) -> None: ...
 
+class AnnounceBlockReply(_message.Message):
+    __slots__ = []
+    def __init__(self) -> None: ...
+
+class AnnounceBlockRequest(_message.Message):
+    __slots__ = ["block"]
+    BLOCK_FIELD_NUMBER: _ClassVar[int]
+    block: Block
+    def __init__(self, block: _Optional[_Union[Block, _Mapping]] = ...) -> None: ...
+
 class Block(_message.Message):
     __slots__ = ["curr_hash", "merkle_root", "nonce", "prev_hash", "trans"]
     CURR_HASH_FIELD_NUMBER: _ClassVar[int]
@@ -32,6 +42,42 @@ class BlockChain(_message.Message):
     BLOCKS_FIELD_NUMBER: _ClassVar[int]
     blocks: _containers.RepeatedCompositeFieldContainer[Block]
     def __init__(self, blocks: _Optional[_Iterable[_Union[Block, _Mapping]]] = ...) -> None: ...
+
+class GetBlockReply(_message.Message):
+    __slots__ = ["blocks"]
+    BLOCKS_FIELD_NUMBER: _ClassVar[int]
+    blocks: _containers.RepeatedCompositeFieldContainer[Block]
+    def __init__(self, blocks: _Optional[_Iterable[_Union[Block, _Mapping]]] = ...) -> None: ...
+
+class GetBlockRequest(_message.Message):
+    __slots__ = ["hashes"]
+    HASHES_FIELD_NUMBER: _ClassVar[int]
+    hashes: _containers.RepeatedScalarFieldContainer[str]
+    def __init__(self, hashes: _Optional[_Iterable[str]] = ...) -> None: ...
+
+class SendBlockchainReply(_message.Message):
+    __slots__ = ["cur_block", "latest_block"]
+    CUR_BLOCK_FIELD_NUMBER: _ClassVar[int]
+    LATEST_BLOCK_FIELD_NUMBER: _ClassVar[int]
+    cur_block: Block
+    latest_block: bool
+    def __init__(self, cur_block: _Optional[_Union[Block, _Mapping]] = ..., latest_block: bool = ...) -> None: ...
+
+class SendBlockchainRequest(_message.Message):
+    __slots__ = ["since_hash"]
+    SINCE_HASH_FIELD_NUMBER: _ClassVar[int]
+    since_hash: str
+    def __init__(self, since_hash: _Optional[str] = ...) -> None: ...
+
+class SendTransactionReply(_message.Message):
+    __slots__ = []
+    def __init__(self) -> None: ...
+
+class SendTransactionRequest(_message.Message):
+    __slots__ = ["trans"]
+    TRANS_FIELD_NUMBER: _ClassVar[int]
+    trans: _containers.RepeatedCompositeFieldContainer[Transaction]
+    def __init__(self, trans: _Optional[_Iterable[_Union[Transaction, _Mapping]]] = ...) -> None: ...
 
 class Snapshot(_message.Message):
     __slots__ = ["accounts"]
