@@ -10,7 +10,7 @@ def mine(block: Block) -> None:
     """Mines block until correct number of 0s is reached."""
     block.nonce = 0
     block.curr_hash = hash_block(block)
-    while block.curr_hash[0:DIFFICULTY] != "0"*DIFFICULTY:
+    while block.curr_hash[0:block.difficulty] != "0"*block.difficulty: 
         block.nonce += 1
         block.curr_hash = hash_block(block)
 
@@ -19,13 +19,9 @@ def mine(block: Block) -> None:
 DIFFICULTY = 4  # number of zeroes required
 USER_COUNT = 10
 BLOCK_COUNT = 1
-REWARD = 100 #amount of coin rewarded per successful hash
-
-
 
 
 snapshot = Snapshot()
-
 
 
 chain = BlockChain()
@@ -63,24 +59,16 @@ while block_cntr < BLOCK_COUNT:
     transList : List[Transaction] = []
 
     # add 1-5 transactions to the block
+
     cnt = 1
     for i in range(cnt):
         randomtrans = random_transaction()
         play_transaction(uncommitted_snapshot, randomtrans)
         block.trans.append(randomtrans)
 
-    commit_snapshot = uncommitted_snapshot
-    # add reward
-    #block.trans.append(Transaction(
-    #    sender_pub_key = MINTING_PUB,
-    #    receiver_pub_key = serialize_public_key(miner_pub),
-    #    amount = REWARD,
-    #    sequence = snapshot.accounts[MINTING_PUB].sequence
-    #))
     
 
-    # block.trans[-1].hash = hash_transaction(block.trans[-1])
-    # block.trans[-1].signature = create_signature(block.trans[-1].hash, load_private_key(MINTING_PRIV))
+    commit_snapshot = uncommitted_snapshot
 
     ## generate the merkle root
     generate_merkle_root(block)

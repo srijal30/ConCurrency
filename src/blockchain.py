@@ -9,7 +9,6 @@ from crypto import hash_block, hash_transaction, validate_signature, load_public
 ### BLOCK
 def validate_block(cur_snapshot: Snapshot, block: Block) -> bool:
     """Validates block hash correctness and transaction validity. Assumes cur_snapshot is valid."""
-    reward_transaction : Transaction
     added_transactions = []
     if block.curr_hash != hash_block(block):
         print("block.curr_hash is not hash of block")
@@ -21,9 +20,9 @@ def validate_block(cur_snapshot: Snapshot, block: Block) -> bool:
             # revert
             for added_tran in reversed(added_transactions):
                 if not undo_transaction(cur_snapshot, added_tran):
-                    print("fails here")
+                    #print("fails here")
                     return False
-            print("fails here2")
+            #print("fails here2")
             return False
     return True
 
@@ -72,6 +71,7 @@ def add_block(snapshot: Snapshot, block: Block, chain: BlockChain) -> bool:
     #    return False
     # Update the blockchain with new block
     chain.blocks.append(block)
+    snapshot.accounts[block.miner].balance += block.mining_reward
     return True
 
 
