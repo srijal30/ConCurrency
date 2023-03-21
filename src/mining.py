@@ -14,7 +14,6 @@ def mine(block: Block) -> None:
         block.nonce += 1
         block.curr_hash = hash_block(block)
 
-
 ###TESTING
 DIFFICULTY = 4  # number of zeroes required
 USER_COUNT = 10
