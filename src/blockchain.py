@@ -109,14 +109,3 @@ def undo_transaction(snapshot: Snapshot, tran: Transaction) -> bool:
     # Reciever's balance is deducted
     snapshot.accounts[tran.receiver_pub_key].balance -= tran.amount
     return True
-
-
-def play_transaction(snapshot: Snapshot, tran: Transaction) -> tuple[bool, Snapshot]:
-    """Applies transaction to a snapshot. !!!TO BE USED ON UNCOMMITTED SNAPSHOTS ONLY!!!"""
-    #Validates transaction signature, sequence, and validity
-    if not replay_transaction(snapshot, tran) or not validate_transaction(tran):
-        return (False, snapshot)
-    
-    snapshot.accounts[tran.sender_pub_key].balance -= tran.amount
-    snapshot.accounts[tran.receiver_pub_key].balance += tran.amount
-    return (True, snapshot)

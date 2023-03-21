@@ -2,14 +2,15 @@
 File that contains the interface for a mining node
 """
 
-from threading import Thread
+from threading import Thread, current_thread
 from crypto import hash_block, generate_merkle_root
 from blockchain import (
     calculate_difficulty, 
     calculate_reward, 
     replay_transaction, 
     validate_transaction,
-    add_block
+    add_block,
+    validate_chain
 )
 from proto.schema_pb2_grpc import MiningNodeServicer
 from proto.schema_pb2 import (
@@ -21,12 +22,13 @@ from proto.schema_pb2 import (
 )
 
 
-# TO DO: add a way to choose whether to start or join the network
+# TO DO: add a way to choose whether to start or join the network and load old data from file
 class MiningNode(MiningNodeServicer):
     """Implementation of a mining node"""
     def __init__(self, miner_pub_key: str):
         self.miner_pub_key = miner_pub_key
         self.transaction_pool = []
+        self.stopped = True
         self.miner = MiningService(self)
         
         self.committed_snapshot = Snapshot()
@@ -39,10 +41,15 @@ class MiningNode(MiningNodeServicer):
         genesis.curr_hash = hash_block(genesis)
         add_block(self.committed_snapshot, genesis, self.blockchain)
 
+    def stop(self) -> None:
+        """Stop the mining node."""
+        self.stopped = True
+
     def start(self) -> None:
         """Starts the mining node."""
         # join network...
         # start mining
+        self.stopped = False
         self.mine_next_block()
 
     def add_transaction(self, trans : Transaction) -> None:
@@ -61,7 +68,8 @@ class MiningNode(MiningNodeServicer):
             mining_reward=calculate_reward(self.blockchain),
         )
         generate_merkle_root(new_block)
-        self.miner.start_mining(new_block)
+        if not self.stopped:
+            self.miner.start_mining(new_block)
 
     def add_block(self, block: Block):
         """Will get called when new block needs to be added to the chain. 
@@ -77,6 +85,8 @@ class MiningNode(MiningNodeServicer):
                 else: # if not in transaction pool, it means we have to add it to uncommited snapshot
                     replay_transaction(self.uncommitted_snapshot, tran)
         # start mining next block
+        
+        # print("done mining", len(self.blockchain.blocks), validate_chain(self.blockchain), block.curr_hash)  # DEBUG
         self.mine_next_block()
 
     # NETWORKING FUNCTIONS
@@ -106,6 +116,7 @@ class MiningService():
         block.nonce = 0
         block.curr_hash = hash_block(block)
         while block.curr_hash[0:block.difficulty] != "0"*block.difficulty:
+            print(block.nonce)
             if self.stopped:  # stops without calling callback
                 return
             block.nonce += 1

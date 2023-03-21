@@ -8,9 +8,11 @@ from proto.schema_pb2 import *
 from crypto import *
 
 
+MAX_BLOCKS = 2
+users = [create_keys() for i in range(10)]
 miner_pub_key = serialize_public_key(create_keys()[1])
 print("MINER:", miner_pub_key)
-users = [create_keys() for i in range(10)]
+
 
 def random_transaction(node: MiningNode):
     sender, receiver = sample(users, 2)
@@ -24,23 +26,29 @@ def random_transaction(node: MiningNode):
     t.signature = create_signature(t.hash, sender[0])
     return t        
 
-def give_transactions(node: MiningNode):
-    sleep(1)
-    node.add_transaction(random_transaction(node))
 
-# START
+def give_transactions(node: MiningNode):
+    while len(node.blockchain.blocks) != MAX_BLOCKS:
+        sleep(1)
+        print("tran added")
+        node.add_transaction(random_transaction(node))
+
+
+# START OF TESTING
 test = MiningNode(miner_pub_key)
 test.start()
 
 # adds transactions every second
-# tran_sender= Thread(target=give_transactions, args=(test,))
-# tran_sender.start()
+tran_sender= Thread(target=give_transactions, args=(test,))
+tran_sender.start()
 
-max_blocks = 2
-cur_block = 1
-while len(test.blockchain.blocks) != max_blocks:
-    if len(test.blockchain.blocks) != cur_block:
-        cur_block += 1
+while len(test.blockchain.blocks) != MAX_BLOCKS:
     pass
 
+tran_sender.join()
+test.stop()
+
+print("SNAPSHOT")
+print(test.committed_snapshot)
+print("\nBLOCKCHAIN")
 print(test.blockchain)
