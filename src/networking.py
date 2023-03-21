@@ -1,5 +1,5 @@
 """
-File with all the networking functionality
+File that contains the interface for a mining node
 """
 
 from typing import List
@@ -16,7 +16,6 @@ from proto.schema_pb2 import (
 
 class MiningNode(MiningNodeServicer):
     """Implementation of a mining node"""
-
     def __init__(self, blockchain: BlockChain):
         self.blockchain = blockchain
         self.transaction_pool : List[Transaction] = []
@@ -39,20 +38,32 @@ class MiningNode(MiningNodeServicer):
 
 
 
+# should we configure this to allow concurrent mining
 class MiningService():
-    """Service that mines blocks in the background"""
+    """Service that mines blocks in the background."""
     def __init__(self, blockchain: BlockChain):
         self.blockchain = blockchain
-
-        # create a thread for mining
+        self.current_miner = 0
         pass
 
-    def mine(self, block: Block):
+    # takes in the block that we want to mine
+    def start_mining(self, block: Block):
         """Mines blocks until completion or until stopped."""
         # create mining thread
         pass
 
+    def stop_mining(self):
+        """Stops the mining process."""
+        pass
 
 
 if __name__ == "__main__":
+    node: MiningNode = MiningNode()
+    node.start() # this starts running the node
+
+    # let it mine a few blocks
+    # then stop
+
+
+    node.stop()
     pass
