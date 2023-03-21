@@ -68,7 +68,8 @@ while block_cntr < BLOCK_COUNT:
     
 
     commit_snapshot = uncommitted_snapshot
-
+    block.mining_reward = calculate_reward(chain)
+    block.miner = serialize_public_key(users[0][1])
     ## generate the merkle root
     generate_merkle_root(block)
     #print(str(block.trans))
@@ -98,4 +99,4 @@ while block_cntr < BLOCK_COUNT:
 # print(validate_chain(chain))
 
 # check if snapshot is working
-print(snapshot)
+print(commit_snapshot)
