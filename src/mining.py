@@ -18,7 +18,7 @@ def mine(block: Block) -> None:
 ###TESTING
 DIFFICULTY = 4  # number of zeroes required
 USER_COUNT = 10
-BLOCK_COUNT = 20
+BLOCK_COUNT = 1
 REWARD = 100 #amount of coin rewarded per successful hash
 
 
