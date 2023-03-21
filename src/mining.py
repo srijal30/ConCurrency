@@ -62,25 +62,13 @@ while block_cntr < BLOCK_COUNT:
     transList : List[Transaction] = []
 
     # add 1-5 transactions to the block
-    cnt = 1
-    for i in range(cnt):
-        randomtrans = random_transaction()
-        play_transaction(uncommitted_snapshot, randomtrans)
-        block.trans.append(randomtrans)
+    # cnt = 1
+    # for i in range(cnt):
+    #     randomtrans = random_transaction()
+    #     play_transaction(uncommitted_snapshot, randomtrans)
+    #     block.trans.append(randomtrans)
 
     commit_snapshot = uncommitted_snapshot
-    # add reward
-    #block.trans.append(Transaction(
-    #    sender_pub_key = MINTING_PUB,
-    #    receiver_pub_key = serialize_public_key(miner_pub),
-    #    amount = REWARD,
-    #    sequence = snapshot.accounts[MINTING_PUB].sequence
-    #))
-    
-
-    # block.trans[-1].hash = hash_transaction(block.trans[-1])
-    # block.trans[-1].signature = create_signature(block.trans[-1].hash, load_private_key(MINTING_PRIV))
-
     ## generate the merkle root
     generate_merkle_root(block)
     #print(str(block.trans))
@@ -88,26 +76,12 @@ while block_cntr < BLOCK_COUNT:
     mine(block)
 
     # add it to the chain
-    print("SUCCESS:",  add_block(commit_snapshot, block, chain))
+    add_block(commit_snapshot, block, chain)
     #input()
-    block_cntr += 1
-    # print(block_cntr)
-    print(f"BLOCK #{block_cntr}:\n{str(chain.blocks[-1])}\n")
+    #block_cntr += 1
+    ## print(block_cntr)
+    # #print(f"BLOCK #{block_cntr}:\n{str(chain.blocks[-1])}\n")
+    ## print block (simulation)
+    # #input("PRESS ENTER")
 
-    # print block (simulation)
-    input("PRESS ENTER")
-
-
-# print the blockchain
-# print(chain)
-
-# check validity
-# print(validate_chain(chain))
-
-
-# mess with the chain's amount
-# chain.blocks[10].trans[0].amount = 100
-# print(validate_chain(chain))
-
-# check if snapshot is working
 print(snapshot)
