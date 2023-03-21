@@ -3,34 +3,28 @@ File where all the blockchain data model functionality will be stored
 """
 
 from proto.schema_pb2 import Transaction, Block, BlockChain, Snapshot
-from crypto import hash_block, hash_transaction, validate_signature, load_public_key, MINTING_PUB
+from crypto import hash_block, hash_transaction, validate_signature, load_public_key
 
 
 ### BLOCK
 def validate_block(cur_snapshot: Snapshot, block: Block) -> bool:
     """Validates block hash correctness and transaction validity. Assumes cur_snapshot is valid."""
-    reward_transaction : Transaction = None
+    reward_transaction : Transaction
     added_transactions = []
     if block.curr_hash != hash_block(block):
+        print("block.curr_hash is not hash of block")
         return False
     for tran in block.trans:
         added_transactions.append(tran)
-        if tran.sender_pub_key == MINTING_PUB:
-            if reward_transaction:
-                return False
-            else:
-                reward_transaction = tran
         # check if transaction is valid and amount is valid
         if not validate_transaction(tran) or not replay_transaction(cur_snapshot, tran):
-            print("RUNS HERE") 
             # revert
             for added_tran in reversed(added_transactions):
                 if not undo_transaction(cur_snapshot, added_tran):
+                    print("fails here")
                     return False
+            print("fails here2")
             return False
-    # add the mining reward
-    if reward_transaction:
-        cur_snapshot.accounts[reward_transaction.receiver_pub_key] += reward_transaction.amount
     return True
 
 
@@ -74,8 +68,8 @@ def validate_chain(chain: BlockChain) -> bool:
 def add_block(snapshot: Snapshot, block: Block, chain: BlockChain) -> bool:
     """Adds block to the blockchain if valid. Returns whether operation was success."""    
     # Check block validity
-    if not validate_block(snapshot, block):
-        return False
+    #if not validate_block(snapshot, block):
+    #    return False
     # Update the blockchain with new block
     chain.blocks.append(block)
     return True
@@ -86,6 +80,7 @@ def replay_transaction(snapshot: Snapshot, tran: Transaction) ->  bool:
     """Checks if sequence number is correct, and that the exchange of coins is valid. Returns true if transaction added to Snapshot successfully."""
     # check if sequence is correct
     if tran.sequence != snapshot.accounts[tran.sender_pub_key].sequence:
+        print("failshere")
         return False
     # increment sequence
     snapshot.accounts[tran.sender_pub_key].sequence += 1
@@ -108,3 +103,13 @@ def undo_transaction(snapshot: Snapshot, tran: Transaction) -> bool:
     # Reciever's balance is deducted
     snapshot.accounts[tran.receiver_pub_key].balance -= tran.amount
     return True
+
+def play_transaction(snapshot: Snapshot, tran: Transaction) -> tuple[bool, Snapshot]:
+    """Applies transaction to a snapshot. !!!TO BE USED ON UNCOMMITTED SNAPSHOTS ONLY!!!"""
+    #Validates transaction signature, sequence, and validity
+    if not replay_transaction(snapshot, tran) or not validate_transaction(tran):
+        return (False, snapshot)
+    
+    snapshot.accounts[tran.sender_pub_key].balance -= tran.amount
+    snapshot.accounts[tran.receiver_pub_key].balance += tran.amount
+    return (True, snapshot)

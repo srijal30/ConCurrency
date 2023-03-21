@@ -25,11 +25,6 @@ PADDING = padding.PSS(
 ENCODING = serialization.Encoding.PEM
 PRIVATE_FORMAT = serialization.PrivateFormat.TraditionalOpenSSL
 PUBLIC_FORMAT = serialization.PublicFormat.SubjectPublicKeyInfo
-with open("keys/minting_pub.pem") as file:
-    MINTING_PUB = file.read()
-with open("keys/minting_priv.pem") as file:
-    MINTING_PRIV = file.read()
-
 
 ### HASHING
 
@@ -66,6 +61,8 @@ def generate_merkle_root(block: Block) -> None:
     def root_helper(hashes: List[str]) -> str:
         if len(hashes) == 1:
             return hashes[0]
+        if len(hashes) == 0:
+            return hash("test")
         new_len = int(len(hashes)/2)
         for i in range(new_len):
             hashes[i] = hash(hashes[i] + hashes.pop(i+1))

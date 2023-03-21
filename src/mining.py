@@ -18,18 +18,13 @@ def mine(block: Block) -> None:
 ###TESTING
 DIFFICULTY = 4  # number of zeroes required
 USER_COUNT = 10
-BLOCK_COUNT = 1
+BLOCK_COUNT = 20
 REWARD = 100 #amount of coin rewarded per successful hash
 
 
-miner_priv, miner_pub = create_keys()
-print("THE MINER IS:", serialize_public_key(miner_pub))
-users = [create_keys() for i in range(USER_COUNT)]
-transaction_pool = []
 
-# committed
+
 snapshot = Snapshot()
-
 
 
 
@@ -39,6 +34,8 @@ genesis.curr_hash = hash_block(genesis)
 add_block(snapshot, genesis, chain)
 print("genesis done\n\n")
 
+users = [create_keys() for i in range(USER_COUNT)]
+transaction_pool : List[Transaction]= []
 # creates valid transaction randomly
 def random_transaction():
     sender, receiver = sample(users, 2)
@@ -52,22 +49,27 @@ def random_transaction():
     t.signature = create_signature(t.hash, sender[0])
     return t        
 
-
+commit_snapshot = Snapshot()
 # mine 20 blocks
 block_cntr = 0
 while block_cntr < BLOCK_COUNT:
     #create new block
     block = Block()
     block.prev_hash = chain.blocks[-1].curr_hash
-    # uncommited                        
-    uncommitted_snapshot = Snapshot()   # add 1-5 transactions to the block
-    cnt = 0
+
+    # committed
+    uncommitted_snapshot = Snapshot()
+
+    transList : List[Transaction] = []
+
+    # add 1-5 transactions to the block
+    cnt = 1
     for i in range(cnt):
         randomtrans = random_transaction()
-        validate_transaction(random_transaction)
-        replay_transaction(uncommitted_snapshot, randomtrans)
+        play_transaction(uncommitted_snapshot, randomtrans)
+        block.trans.append(randomtrans)
 
-
+    commit_snapshot = uncommitted_snapshot
     # add reward
     #block.trans.append(Transaction(
     #    sender_pub_key = MINTING_PUB,
@@ -75,18 +77,20 @@ while block_cntr < BLOCK_COUNT:
     #    amount = REWARD,
     #    sequence = snapshot.accounts[MINTING_PUB].sequence
     #))
-    #block.trans[-1].hash = hash_transaction(block.trans[-1])
-    #block.trans[-1].signature = create_signature(block.trans[-1].hash, load_private_key(MINTING_PRIV))
+    
+
+    # block.trans[-1].hash = hash_transaction(block.trans[-1])
+    # block.trans[-1].signature = create_signature(block.trans[-1].hash, load_private_key(MINTING_PRIV))
 
     ## generate the merkle root
-    #generate_merkle_root(block)
-
+    generate_merkle_root(block)
+    #print(str(block.trans))
     # mine the block (find cur_hash and nonce)
     mine(block)
 
     # add it to the chain
-    print("SUCCESS:",  add_block(snapshot, block, chain))
-    input()
+    print("SUCCESS:",  add_block(commit_snapshot, block, chain))
+    #input()
     block_cntr += 1
     # print(block_cntr)
     print(f"BLOCK #{block_cntr}:\n{str(chain.blocks[-1])}\n")
