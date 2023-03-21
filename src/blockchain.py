@@ -75,6 +75,16 @@ def add_block(snapshot: Snapshot, block: Block, chain: BlockChain) -> bool:
     return True
 
 
+def calculate_difficulty(chain: BlockChain) -> int:
+    """Calculates the difficulty for the next block."""
+    return 4
+
+
+def calculate_reward(chain: BlockChain) -> int:
+    """Calculates the mining reward for the next block"""
+    return 100
+
+
 ### SNAPSHOT
 def replay_transaction(snapshot: Snapshot, tran: Transaction) ->  bool:
     """Checks if sequence number is correct, and that the exchange of coins is valid. Returns true if transaction added to Snapshot successfully."""
@@ -103,6 +113,7 @@ def undo_transaction(snapshot: Snapshot, tran: Transaction) -> bool:
     # Reciever's balance is deducted
     snapshot.accounts[tran.receiver_pub_key].balance -= tran.amount
     return True
+
 
 def play_transaction(snapshot: Snapshot, tran: Transaction) -> tuple[bool, Snapshot]:
     """Applies transaction to a snapshot. !!!TO BE USED ON UNCOMMITTED SNAPSHOTS ONLY!!!"""
