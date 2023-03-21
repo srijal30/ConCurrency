@@ -2,25 +2,35 @@
 File where all the blockchain data model functionality will be stored
 """
 
-from schema_pb2 import Transaction, Block, BlockChain, Snapshot
-from crypto import hash_block, hash_transaction, validate_signature, load_public_key 
+from proto.schema_pb2 import Transaction, Block, BlockChain, Snapshot
+from crypto import hash_block, hash_transaction, validate_signature, load_public_key, MINTING_PUB
 
 
 ### BLOCK
 def validate_block(cur_snapshot: Snapshot, block: Block) -> bool:
     """Validates block hash correctness and transaction validity. Assumes cur_snapshot is valid."""
+    reward_transaction : Transaction = None
+    added_transactions = []
     if block.curr_hash != hash_block(block):
         return False
-    added_transactions = []
     for tran in block.trans:
-         # check if transaction is valid and amount is valid
         added_transactions.append(tran)
+        if tran.sender_pub_key == MINTING_PUB:
+            if reward_transaction:
+                return False
+            else:
+                reward_transaction = tran
+        # check if transaction is valid and amount is valid
         if not validate_transaction(tran) or not replay_transaction(cur_snapshot, tran):
+            print("RUNS HERE") 
             # revert
             for added_tran in reversed(added_transactions):
                 if not undo_transaction(cur_snapshot, added_tran):
                     return False
             return False
+    # add the mining reward
+    if reward_transaction:
+        cur_snapshot.accounts[reward_transaction.receiver_pub_key] += reward_transaction.amount
     return True
 
 
@@ -34,7 +44,6 @@ def add_transaction(block: Block, transact: Transaction) -> bool:
 
 
 ### TRANSACTION
-
 def validate_transaction(tran: Transaction) -> bool:
     """Validates a transaction's signature and hash."""
     # validate the hash
@@ -47,7 +56,6 @@ def validate_transaction(tran: Transaction) -> bool:
 
 
 ### BLOCKCHAIN
-
 def validate_chain(chain: BlockChain) -> bool:
     # Loop through blockchain array and validate each block
     cur_snapshot = Snapshot()
@@ -74,10 +82,12 @@ def add_block(snapshot: Snapshot, block: Block, chain: BlockChain) -> bool:
 
 
 ### SNAPSHOT
-
 def replay_transaction(snapshot: Snapshot, tran: Transaction) ->  bool:
-    """Returns true if valid transaction is added successfully."""
-    # sender has sequence incremented
+    """Checks if sequence number is correct, and that the exchange of coins is valid. Returns true if transaction added to Snapshot successfully."""
+    # check if sequence is correct
+    if tran.sequence != snapshot.accounts[tran.sender_pub_key].sequence:
+        return False
+    # increment sequence
     snapshot.accounts[tran.sender_pub_key].sequence += 1
     # send amount to receiver if sender has enough
     if snapshot.accounts[tran.sender_pub_key].balance >= tran.amount:

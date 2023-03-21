@@ -1,28 +1,24 @@
 syntax = "proto3";
 package messages;
 
-//Blockchain Data Model
+///Blockchain Data Model
 message BlockChain {
   repeated Block blocks = 1;
 };
 
 message Block {
-  string prev_hash = 1; //what type?
-  string curr_hash = 2; //what type?
-  
+  string prev_hash = 1;
+  string curr_hash = 2;
   uint64 nonce = 3;
-  
-  string merkle_root = 4; //we can hash all the transactions and use that for the pow instead?
+  string merkle_root = 4;
   repeated Transaction trans = 5;
 };
 
 message Transaction {
   string hash = 1;
-
   string sender_pub_key = 2;
   string receiver_pub_key = 3;
   string signature = 4;
-
   uint64 amount = 5;
   uint64 sequence = 6;
 }
@@ -35,4 +31,48 @@ message Snapshot{
 message Account{
   uint64 balance = 1;
   uint64 sequence = 2;
+}
+
+
+///Networking Model
+service MiningNode{
+  // returns a list of requested blocks
+  rpc get_block(GetBlockRequest) returns (GetBlockReply) {}
+  // announces a newly mined block
+  rpc announce_block(AnnounceBlockRequest) returns (AnnounceBlockReply) {}
+  // sends a transaction over the network
+  rpc send_transaction(SendTransactionRequest) returns (SendTransactionReply) {}
+  // sends the entire blockchain over the network
+  rpc send_blockchain(SendBlockchainRequest) returns(stream SendBlockchainReply) {}
+}
+
+// get_block
+message GetBlockRequest {
+  repeated string hashes = 1; // should we request indexes instead?
+}
+message GetBlockReply {
+  repeated Block blocks = 1;
+}
+
+// announce_block
+message AnnounceBlockRequest{
+  Block block = 1;
+}
+message AnnounceBlockReply{
+}
+
+// send_transaction
+message SendTransactionRequest{
+ repeated Transaction trans = 1; 
+}
+message SendTransactionReply{
+}
+
+// send_blockchain
+message SendBlockchainRequest{
+  optional string since_hash = 1; // if the requester wants all blocks since specified hash
+}
+message SendBlockchainReply{
+  Block cur_block = 1;
+  bool latest_block = 2; // is true if this is the latest block
 }

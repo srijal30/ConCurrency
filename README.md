@@ -16,9 +16,10 @@ python -m venv venv
 . ./venv/Scripts/activate 
 pip install -r requirements.txt
 ```
-* (Optional) To compile the ProtoBuf files locally, first make sure you have [protoc](https://github.com/protocolbuffers/protobuf/releases) installed. Then call this command:
+* **OPTIONAL:** To compile the ProtoBuf files locally, run the following commands
 ```
-protoc schema.proto -I=. --python_out=src --pyi_out=src
+pip install -r dev-requirements.txt
+python -m grpc_tools.protoc -I. --python_out=src/proto --pyi_out=src/proto --grpc_python_out=src/proto schema.proto
 ```
  
 
