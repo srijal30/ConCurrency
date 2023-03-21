@@ -14,11 +14,15 @@ def mine(block: Block) -> None:
         block.nonce += 1
         block.curr_hash = hash_block(block)
 
+def calculate_difficult() -> int:
+    return 4
+
+
 
 ###TESTING
 DIFFICULTY = 4  # number of zeroes required
 USER_COUNT = 10
-BLOCK_COUNT = 20
+BLOCK_COUNT = 1
 REWARD = 100 #amount of coin rewarded per successful hash
 
 
