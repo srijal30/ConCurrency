@@ -77,26 +77,12 @@ while block_cntr < BLOCK_COUNT:
     mine(block)
 
     # add it to the chain
-    print("SUCCESS:",  add_block(commit_snapshot, block, chain))
+    add_block(commit_snapshot, block, chain)
     #input()
-    block_cntr += 1
-    # print(block_cntr)
-    print(f"BLOCK #{block_cntr}:\n{str(chain.blocks[-1])}\n")
+    #block_cntr += 1
+    ## print(block_cntr)
+    # #print(f"BLOCK #{block_cntr}:\n{str(chain.blocks[-1])}\n")
+    ## print block (simulation)
+    # #input("PRESS ENTER")
 
-    # print block (simulation)
-    input("PRESS ENTER")
-
-
-# print the blockchain
-# print(chain)
-
-# check validity
-# print(validate_chain(chain))
-
-
-# mess with the chain's amount
-# chain.blocks[10].trans[0].amount = 100
-# print(validate_chain(chain))
-
-# check if snapshot is working
-print(commit_snapshot)
+print(snapshot)

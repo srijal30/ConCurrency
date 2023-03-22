@@ -11,7 +11,6 @@ def validate_block(cur_snapshot: Snapshot, block: Block) -> bool:
     """Validates block hash correctness and transaction validity. Assumes cur_snapshot is valid."""
     added_transactions = []
     if block.curr_hash != hash_block(block):
-        print("block.curr_hash is not hash of block")
         return False
     for tran in block.trans:
         added_transactions.append(tran)
@@ -20,9 +19,7 @@ def validate_block(cur_snapshot: Snapshot, block: Block) -> bool:
             # revert
             for added_tran in reversed(added_transactions):
                 if not undo_transaction(cur_snapshot, added_tran):
-                    #print("fails here")
                     return False
-            #print("fails here2")
             return False
     return True
 
@@ -113,14 +110,3 @@ def undo_transaction(snapshot: Snapshot, tran: Transaction) -> bool:
     # Reciever's balance is deducted
     snapshot.accounts[tran.receiver_pub_key].balance -= tran.amount
     return True
-
-
-def play_transaction(snapshot: Snapshot, tran: Transaction) -> tuple[bool, Snapshot]:
-    """Applies transaction to a snapshot. !!!TO BE USED ON UNCOMMITTED SNAPSHOTS ONLY!!!"""
-    #Validates transaction signature, sequence, and validity
-    if not replay_transaction(snapshot, tran) or not validate_transaction(tran):
-        return (False, snapshot)
-    
-    snapshot.accounts[tran.sender_pub_key].balance -= tran.amount
-    snapshot.accounts[tran.receiver_pub_key].balance += tran.amount
-    return (True, snapshot)
