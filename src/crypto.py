@@ -29,7 +29,7 @@ PUBLIC_FORMAT = serialization.PublicFormat.SubjectPublicKeyInfo
 ### HASHING
 
 def hash(*args: Any) -> str:
-    """Hashes the input using sha256."""
+    """Hashes the input using sha256"""
     msg = ""
     for arg in args:
         msg += str(arg)
@@ -42,10 +42,7 @@ def hash_block(block: Block) -> str:
     return hash(
         block.prev_hash,
         block.nonce,
-        block.merkle_root,
-        block.miner_pub_key,
-        block.reward,
-        block.difficulty
+        block.merkle_root
     )
 
 

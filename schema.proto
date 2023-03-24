@@ -12,10 +12,9 @@ message Block {
   uint64 nonce = 3;
   string merkle_root = 4;
   repeated Transaction trans = 5;
-  string miner_pub_key = 6;
-  uint64 reward = 7;
+  string miner = 6;
+  uint64 mining_reward = 7;
   uint64 difficulty = 8;
-  // add timestamp
 };
 
 message Transaction {
