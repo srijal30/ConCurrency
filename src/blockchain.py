@@ -68,6 +68,7 @@ def add_block(snapshot: Snapshot, block: Block, chain: BlockChain) -> bool:
     #    return False
     # Update the blockchain with new block
     chain.blocks.append(block)
+    snapshot.accounts[block.miner].balance += block.mining_reward
     return True
 
 
