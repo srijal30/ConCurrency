@@ -43,6 +43,7 @@ class MiningNode(MiningNodeServicer):
 
     def stop(self) -> None:
         """Stop the mining node."""
+        print("stops")
         self.stopped = True
 
     def start(self) -> None:
@@ -59,10 +60,14 @@ class MiningNode(MiningNodeServicer):
 
     def mine_next_block(self):
         """Creates and starts mining a new block."""
+        if len(self.transaction_pool) > 10:
+            transactions_to_be_mined : list = self.transaction_pool[0:10]
+        else:
+            transactions_to_be_mined : list = self.transaction_pool[0:]
         # setup the new block
         new_block = Block(
-            prev_hash=self.blockchain.blocks[-1].curr_hash,
-            trans=self.transaction_pool.copy(),
+            prev_hash=self.blockchain.blocks[-1].curr_hash, 
+            trans=transactions_to_be_mined,
             miner=self.miner_pub_key,
             difficulty=calculate_difficulty(self.blockchain),
             mining_reward=calculate_reward(self.blockchain),
@@ -86,7 +91,7 @@ class MiningNode(MiningNodeServicer):
                     replay_transaction(self.uncommitted_snapshot, tran)
         # start mining next block
         
-        # print("done mining", len(self.blockchain.blocks), validate_chain(self.blockchain), block.curr_hash)  # DEBUG
+        #print("done mining", len(self.blockchain.blocks), validate_chain(self.blockchain), block.curr_hash)  # DEBUG
         self.mine_next_block()
 
     # NETWORKING FUNCTIONS
@@ -116,12 +121,14 @@ class MiningService():
         block.nonce = 0
         block.curr_hash = hash_block(block)
         while block.curr_hash[0:block.difficulty] != "0"*block.difficulty:
-            print(block.nonce)
+            #print(block.nonce)
             if self.stopped:  # stops without calling callback
                 return
             block.nonce += 1
             block.curr_hash = hash_block(block)
         # since fully completes, callback can be called
+        print("successfully mined block")
+        # print(len(self.parent.blockchain.blocks))
         self.parent.add_block(block)
 
     def start_mining(self, block: Block) -> None:

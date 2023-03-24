@@ -1,5 +1,6 @@
 from threading import Thread
 from time import sleep
+import sys
 from random import randint, sample
 
 from networking import *
@@ -43,10 +44,12 @@ tran_sender= Thread(target=give_transactions, args=(test,))
 tran_sender.start()
 
 while len(test.blockchain.blocks) != MAX_BLOCKS:
+    print(len(test.blockchain.blocks))
     pass
-
-tran_sender.join()
+print(len(test.blockchain.blocks))
+print("here1")
 test.stop()
+tran_sender.join()
 
 print("SNAPSHOT")
 print(test.committed_snapshot)
