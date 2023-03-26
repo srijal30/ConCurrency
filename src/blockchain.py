@@ -75,15 +75,52 @@ def add_block(committed_snapshot: Snapshot, block: Block, chain: BlockChain) -> 
     return True
 
 
-def calculate_difficulty(chain: BlockChain) -> int:
-    """Calculates the difficulty for the next block."""
-    return 4
+def calculate_difficulty(blockchain, block_index, blocks_to_recalculate_difficulty=2016):
+    # Recalculate difficulty every n blocks
+    if block_index % blocks_to_recalculate_difficulty == 0 and block_index > 0:
+        # Get the time it took to mine the previous n blocks
+        prev_time = (blockchain[block_index-1]['timestamp'] - blockchain[block_index-blocks_to_recalculate_difficulty]['timestamp']) / 1000
+        # Calculate the ideal time it should have taken to mine n blocks
+        ideal_time = blocks_to_recalculate_difficulty * 10 * 60  # 10 minutes per block
+        # Adjust difficulty based on the ratio of actual time to ideal time
+        ratio = prev_time / ideal_time
+        if ratio > 1:
+            # Difficulty should be decreased to make mining easier
+            difficulty = int(blockchain[block_index-1]['difficulty'] * (1 / ratio))
+        else:
+            # Difficulty should be increased to make mining harder
+            difficulty = int(blockchain[block_index-1]['difficulty'] * ratio)
+    else:
+        # Use the previous block's difficulty if not recalculating difficulty
+        difficulty = blockchain[block_index-1]['difficulty']
+    return difficulty
 
 
+### no clue if this works at all
 def calculate_reward(chain: BlockChain) -> int:
     """Calculates the mining reward for the next block"""
-    return 100
-
+    last_block = chain.blocks[-1]
+    last_reward = last_block.mining_reward
+    last_timestamp = last_block.timestamp
+    last_difficulty = calculate_difficulty(chain, len(chain.blocks) - 1)  # Use updated difficulty
+    time_since_last_block = time.time() - last_timestamp
+    max_reward = 10  # maximum reward per block
+    halving_interval = 500  # number of blocks after which reward is halved
+    block_count = len(chain.blocks)
+    
+    if block_count >= halving_interval:
+        halvings = block_count // halving_interval
+        reward = max_reward / 2**halvings
+        if reward < 1:
+            reward = 1
+    else:
+        reward = max_reward
+    
+    total_reward = reward + sum(tran.fee for tran in last_block.trans)  # add transaction fees
+    if time_since_last_block < 60:
+        return total_reward
+    else:
+        return total_reward * (1 + last_difficulty) * (time_since_last_block // 60)
 
 ### SNAPSHOT
 def replay_transaction(snapshot: Snapshot, tran: Transaction) ->  bool:
