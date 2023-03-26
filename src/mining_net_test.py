@@ -1,3 +1,6 @@
+"""
+Test for the whole application
+"""
 from threading import Thread
 from time import sleep
 import sys
