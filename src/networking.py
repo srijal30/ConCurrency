@@ -43,7 +43,6 @@ class MiningNode(MiningNodeServicer):
 
     def stop(self) -> None:
         """Stop the mining node."""
-        print("stops")
         self.stopped = True
 
     def start(self) -> None:
@@ -91,7 +90,7 @@ class MiningNode(MiningNodeServicer):
                     replay_transaction(self.uncommitted_snapshot, tran)
         # start mining next block
         
-        #print("done mining", len(self.blockchain.blocks), validate_chain(self.blockchain), block.curr_hash)  # DEBUG
+        # print("done mining", len(self.blockchain.blocks), validate_chain(self.blockchain), block.curr_hash)  # DEBUG
         self.mine_next_block()
 
     # NETWORKING FUNCTIONS

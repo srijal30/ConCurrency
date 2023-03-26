@@ -2,7 +2,11 @@
 """Client and server classes corresponding to protobuf-defined services."""
 import grpc
 
+<<<<<<< HEAD
 from . import schema_pb2 as schema__pb2
+=======
+import proto.schema_pb2 as schema__pb2
+>>>>>>> parent of a2b17d6 (cleanup)
 
 
 class MiningNodeStub(object):

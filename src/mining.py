@@ -58,18 +58,13 @@ while block_cntr < BLOCK_COUNT:
     transList : List[Transaction] = []
 
     # add 1-5 transactions to the block
-
-    cnt = 1
-    for i in range(cnt):
-        randomtrans = random_transaction()
-        play_transaction(uncommitted_snapshot, randomtrans)
-        block.trans.append(randomtrans)
-
-    
+    # cnt = 1
+    # for i in range(cnt):
+    #     randomtrans = random_transaction()
+    #     play_transaction(uncommitted_snapshot, randomtrans)
+    #     block.trans.append(randomtrans)
 
     commit_snapshot = uncommitted_snapshot
-    block.mining_reward = calculate_reward(chain)
-    block.miner = serialize_public_key(users[0][1])
     ## generate the merkle root
     generate_merkle_root(block)
     #print(str(block.trans))
