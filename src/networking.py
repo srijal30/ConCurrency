@@ -45,8 +45,8 @@ class Network(NetworkServicer):
                     self.transaction_pool.remove(tran)
                 else: # if not in transaction pool, it means we have to add it to uncommited snapshot
                     replay_transaction(self.uncommitted_snapshot, tran)
-            self.transaction_pool.unlock()
-            self.uncommitted_snap.unlock()
+            # self.transaction_pool.unlock()
+            # self.uncommitted_snap.unlock()
         return AnnounceBlockReply()
     
     def send_transaction(self, request: SendTransactionRequest, context) -> SendTransactionReply:
