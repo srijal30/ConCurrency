@@ -45,7 +45,8 @@ def hash_block(block: Block) -> str:
         block.merkle_root,
         block.miner_pub_key,
         block.reward,
-        block.difficulty
+        block.difficulty,
+        block.timestamp
     )
 
 

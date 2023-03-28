@@ -18,6 +18,11 @@ message Block {
   double timestamp = 9;
 };
 
+/*
+TO DO:
+  - Add UUID like component
+  - Add a timestamp
+*/
 message Transaction {
   string hash = 1;
   string sender_pub_key = 2;
