@@ -13,7 +13,7 @@ _sym_db = _symbol_database.Default()
 
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x0cschema.proto\x12\x08messages\"-\n\nBlockChain\x12\x1f\n\x06\x62locks\x18\x01 \x03(\x0b\x32\x0f.messages.Block\"\xb1\x01\n\x05\x42lock\x12\x11\n\tprev_hash\x18\x01 \x01(\t\x12\x11\n\tcurr_hash\x18\x02 \x01(\t\x12\r\n\x05nonce\x18\x03 \x01(\x04\x12\x13\n\x0bmerkle_root\x18\x04 \x01(\t\x12$\n\x05trans\x18\x05 \x03(\x0b\x32\x15.messages.Transaction\x12\r\n\x05miner\x18\x06 \x01(\t\x12\x15\n\rmining_reward\x18\x07 \x01(\x04\x12\x12\n\ndifficulty\x18\x08 \x01(\x04\"\x82\x01\n\x0bTransaction\x12\x0c\n\x04hash\x18\x01 \x01(\t\x12\x16\n\x0esender_pub_key\x18\x02 \x01(\t\x12\x18\n\x10receiver_pub_key\x18\x03 \x01(\t\x12\x11\n\tsignature\x18\x04 \x01(\t\x12\x0e\n\x06\x61mount\x18\x05 \x01(\x04\x12\x10\n\x08sequence\x18\x06 \x01(\x04\"\x82\x01\n\x08Snapshot\x12\x32\n\x08\x61\x63\x63ounts\x18\x01 \x03(\x0b\x32 .messages.Snapshot.AccountsEntry\x1a\x42\n\rAccountsEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12 \n\x05value\x18\x02 \x01(\x0b\x32\x11.messages.Account:\x02\x38\x01\",\n\x07\x41\x63\x63ount\x12\x0f\n\x07\x62\x61lance\x18\x01 \x01(\x04\x12\x10\n\x08sequence\x18\x02 \x01(\x04\"!\n\x0fGetBlockRequest\x12\x0e\n\x06hashes\x18\x01 \x03(\t\"0\n\rGetBlockReply\x12\x1f\n\x06\x62locks\x18\x01 \x03(\x0b\x32\x0f.messages.Block\"6\n\x14\x41nnounceBlockRequest\x12\x1e\n\x05\x62lock\x18\x01 \x01(\x0b\x32\x0f.messages.Block\"\x14\n\x12\x41nnounceBlockReply\">\n\x16SendTransactionRequest\x12$\n\x05trans\x18\x01 \x03(\x0b\x32\x15.messages.Transaction\"\x16\n\x14SendTransactionReply\"?\n\x15SendBlockchainRequest\x12\x17\n\nsince_hash\x18\x01 \x01(\tH\x00\x88\x01\x01\x42\r\n\x0b_since_hash\"O\n\x13SendBlockchainReply\x12\"\n\tcur_block\x18\x01 \x01(\x0b\x32\x0f.messages.Block\x12\x14\n\x0clatest_block\x18\x02 \x01(\x08\x32\xd0\x02\n\nMiningNode\x12\x41\n\tget_block\x12\x19.messages.GetBlockRequest\x1a\x17.messages.GetBlockReply\"\x00\x12P\n\x0e\x61nnounce_block\x12\x1e.messages.AnnounceBlockRequest\x1a\x1c.messages.AnnounceBlockReply\"\x00\x12V\n\x10send_transaction\x12 .messages.SendTransactionRequest\x1a\x1e.messages.SendTransactionReply\"\x00\x12U\n\x0fsend_blockchain\x12\x1f.messages.SendBlockchainRequest\x1a\x1d.messages.SendBlockchainReply\"\x00\x30\x01\x62\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x0cschema.proto\x12\x08messages\"-\n\nBlockChain\x12\x1f\n\x06\x62locks\x18\x01 \x03(\x0b\x32\x0f.messages.Block\"\xc5\x01\n\x05\x42lock\x12\x11\n\tprev_hash\x18\x01 \x01(\t\x12\x11\n\tcurr_hash\x18\x02 \x01(\t\x12\r\n\x05nonce\x18\x03 \x01(\x04\x12\x13\n\x0bmerkle_root\x18\x04 \x01(\t\x12$\n\x05trans\x18\x05 \x03(\x0b\x32\x15.messages.Transaction\x12\x15\n\rminer_pub_key\x18\x06 \x01(\t\x12\x0e\n\x06reward\x18\x07 \x01(\x04\x12\x12\n\ndifficulty\x18\x08 \x01(\x04\x12\x11\n\ttimestamp\x18\t \x01(\x01\"\x82\x01\n\x0bTransaction\x12\x0c\n\x04hash\x18\x01 \x01(\t\x12\x16\n\x0esender_pub_key\x18\x02 \x01(\t\x12\x18\n\x10receiver_pub_key\x18\x03 \x01(\t\x12\x11\n\tsignature\x18\x04 \x01(\t\x12\x0e\n\x06\x61mount\x18\x05 \x01(\x04\x12\x10\n\x08sequence\x18\x06 \x01(\x04\"\x82\x01\n\x08Snapshot\x12\x32\n\x08\x61\x63\x63ounts\x18\x01 \x03(\x0b\x32 .messages.Snapshot.AccountsEntry\x1a\x42\n\rAccountsEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12 \n\x05value\x18\x02 \x01(\x0b\x32\x11.messages.Account:\x02\x38\x01\",\n\x07\x41\x63\x63ount\x12\x0f\n\x07\x62\x61lance\x18\x01 \x01(\x04\x12\x10\n\x08sequence\x18\x02 \x01(\x04\"!\n\x0fGetBlockRequest\x12\x0e\n\x06hashes\x18\x01 \x03(\t\"0\n\rGetBlockReply\x12\x1f\n\x06\x62locks\x18\x01 \x03(\x0b\x32\x0f.messages.Block\"6\n\x14\x41nnounceBlockRequest\x12\x1e\n\x05\x62lock\x18\x01 \x01(\x0b\x32\x0f.messages.Block\"\x14\n\x12\x41nnounceBlockReply\">\n\x16SendTransactionRequest\x12$\n\x05trans\x18\x01 \x03(\x0b\x32\x15.messages.Transaction\"\x16\n\x14SendTransactionReply\"?\n\x15SendBlockchainRequest\x12\x17\n\nsince_hash\x18\x01 \x01(\tH\x00\x88\x01\x01\x42\r\n\x0b_since_hash\"O\n\x13SendBlockchainReply\x12\"\n\tcur_block\x18\x01 \x01(\x0b\x32\x0f.messages.Block\x12\x14\n\x0clatest_block\x18\x02 \x01(\x08\x32\xd0\x02\n\nMiningNode\x12\x41\n\tget_block\x12\x19.messages.GetBlockRequest\x1a\x17.messages.GetBlockReply\"\x00\x12P\n\x0e\x61nnounce_block\x12\x1e.messages.AnnounceBlockRequest\x1a\x1c.messages.AnnounceBlockReply\"\x00\x12V\n\x10send_transaction\x12 .messages.SendTransactionRequest\x1a\x1e.messages.SendTransactionReply\"\x00\x12U\n\x0fsend_blockchain\x12\x1f.messages.SendBlockchainRequest\x1a\x1d.messages.SendBlockchainReply\"\x00\x30\x01\x62\x06proto3')
 
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, globals())
 _builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, 'schema_pb2', globals())
@@ -25,31 +25,31 @@ if _descriptor._USE_C_DESCRIPTORS == False:
   _BLOCKCHAIN._serialized_start=26
   _BLOCKCHAIN._serialized_end=71
   _BLOCK._serialized_start=74
-  _BLOCK._serialized_end=251
-  _TRANSACTION._serialized_start=254
-  _TRANSACTION._serialized_end=384
-  _SNAPSHOT._serialized_start=387
-  _SNAPSHOT._serialized_end=517
-  _SNAPSHOT_ACCOUNTSENTRY._serialized_start=451
-  _SNAPSHOT_ACCOUNTSENTRY._serialized_end=517
-  _ACCOUNT._serialized_start=519
-  _ACCOUNT._serialized_end=563
-  _GETBLOCKREQUEST._serialized_start=565
-  _GETBLOCKREQUEST._serialized_end=598
-  _GETBLOCKREPLY._serialized_start=600
-  _GETBLOCKREPLY._serialized_end=648
-  _ANNOUNCEBLOCKREQUEST._serialized_start=650
-  _ANNOUNCEBLOCKREQUEST._serialized_end=704
-  _ANNOUNCEBLOCKREPLY._serialized_start=706
-  _ANNOUNCEBLOCKREPLY._serialized_end=726
-  _SENDTRANSACTIONREQUEST._serialized_start=728
-  _SENDTRANSACTIONREQUEST._serialized_end=790
-  _SENDTRANSACTIONREPLY._serialized_start=792
-  _SENDTRANSACTIONREPLY._serialized_end=814
-  _SENDBLOCKCHAINREQUEST._serialized_start=816
-  _SENDBLOCKCHAINREQUEST._serialized_end=879
-  _SENDBLOCKCHAINREPLY._serialized_start=881
-  _SENDBLOCKCHAINREPLY._serialized_end=960
-  _MININGNODE._serialized_start=963
-  _MININGNODE._serialized_end=1299
+  _BLOCK._serialized_end=271
+  _TRANSACTION._serialized_start=274
+  _TRANSACTION._serialized_end=404
+  _SNAPSHOT._serialized_start=407
+  _SNAPSHOT._serialized_end=537
+  _SNAPSHOT_ACCOUNTSENTRY._serialized_start=471
+  _SNAPSHOT_ACCOUNTSENTRY._serialized_end=537
+  _ACCOUNT._serialized_start=539
+  _ACCOUNT._serialized_end=583
+  _GETBLOCKREQUEST._serialized_start=585
+  _GETBLOCKREQUEST._serialized_end=618
+  _GETBLOCKREPLY._serialized_start=620
+  _GETBLOCKREPLY._serialized_end=668
+  _ANNOUNCEBLOCKREQUEST._serialized_start=670
+  _ANNOUNCEBLOCKREQUEST._serialized_end=724
+  _ANNOUNCEBLOCKREPLY._serialized_start=726
+  _ANNOUNCEBLOCKREPLY._serialized_end=746
+  _SENDTRANSACTIONREQUEST._serialized_start=748
+  _SENDTRANSACTIONREQUEST._serialized_end=810
+  _SENDTRANSACTIONREPLY._serialized_start=812
+  _SENDTRANSACTIONREPLY._serialized_end=834
+  _SENDBLOCKCHAINREQUEST._serialized_start=836
+  _SENDBLOCKCHAINREQUEST._serialized_end=899
+  _SENDBLOCKCHAINREPLY._serialized_start=901
+  _SENDBLOCKCHAINREPLY._serialized_end=980
+  _MININGNODE._serialized_start=983
+  _MININGNODE._serialized_end=1319
 # @@protoc_insertion_point(module_scope)

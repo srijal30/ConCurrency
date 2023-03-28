@@ -24,24 +24,26 @@ class AnnounceBlockRequest(_message.Message):
     def __init__(self, block: _Optional[_Union[Block, _Mapping]] = ...) -> None: ...
 
 class Block(_message.Message):
-    __slots__ = ["curr_hash", "difficulty", "merkle_root", "miner", "mining_reward", "nonce", "prev_hash", "trans"]
+    __slots__ = ["curr_hash", "difficulty", "merkle_root", "miner_pub_key", "nonce", "prev_hash", "reward", "timestamp", "trans"]
     CURR_HASH_FIELD_NUMBER: _ClassVar[int]
     DIFFICULTY_FIELD_NUMBER: _ClassVar[int]
     MERKLE_ROOT_FIELD_NUMBER: _ClassVar[int]
-    MINER_FIELD_NUMBER: _ClassVar[int]
-    MINING_REWARD_FIELD_NUMBER: _ClassVar[int]
+    MINER_PUB_KEY_FIELD_NUMBER: _ClassVar[int]
     NONCE_FIELD_NUMBER: _ClassVar[int]
     PREV_HASH_FIELD_NUMBER: _ClassVar[int]
+    REWARD_FIELD_NUMBER: _ClassVar[int]
+    TIMESTAMP_FIELD_NUMBER: _ClassVar[int]
     TRANS_FIELD_NUMBER: _ClassVar[int]
     curr_hash: str
     difficulty: int
     merkle_root: str
-    miner: str
-    mining_reward: int
+    miner_pub_key: str
     nonce: int
     prev_hash: str
+    reward: int
+    timestamp: float
     trans: _containers.RepeatedCompositeFieldContainer[Transaction]
-    def __init__(self, prev_hash: _Optional[str] = ..., curr_hash: _Optional[str] = ..., nonce: _Optional[int] = ..., merkle_root: _Optional[str] = ..., trans: _Optional[_Iterable[_Union[Transaction, _Mapping]]] = ..., miner: _Optional[str] = ..., mining_reward: _Optional[int] = ..., difficulty: _Optional[int] = ...) -> None: ...
+    def __init__(self, prev_hash: _Optional[str] = ..., curr_hash: _Optional[str] = ..., nonce: _Optional[int] = ..., merkle_root: _Optional[str] = ..., trans: _Optional[_Iterable[_Union[Transaction, _Mapping]]] = ..., miner_pub_key: _Optional[str] = ..., reward: _Optional[int] = ..., difficulty: _Optional[int] = ..., timestamp: _Optional[float] = ...) -> None: ...
 
 class BlockChain(_message.Message):
     __slots__ = ["blocks"]
