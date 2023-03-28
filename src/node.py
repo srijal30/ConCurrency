@@ -45,6 +45,7 @@ class MiningNode(MiningNodeServicer):
         genesis = Block(prev_hash="0"*64, merkle_root="0"*64, trans=[])
         genesis.curr_hash = hash_block(genesis)
         add_block(self.committed_snapshot, genesis, self.blockchain)
+
     def stop(self) -> None:
         """Stop the mining node."""
         self.stopped = True
@@ -68,7 +69,6 @@ class MiningNode(MiningNodeServicer):
         else:
             transactions_to_be_mined : list = self.transaction_pool[0:]
         # setup the new block
-        print(len(self.blockchain.blocks))
         new_block = Block(
             prev_hash=self.blockchain.blocks[-1].curr_hash, 
             trans=transactions_to_be_mined,
