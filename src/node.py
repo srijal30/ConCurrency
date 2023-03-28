@@ -73,7 +73,7 @@ class MiningNode(MiningNodeServicer):
             prev_hash=self.blockchain.blocks[-1].curr_hash, 
             trans=transactions_to_be_mined,
             miner=self.miner_pub_key,
-            difficulty=calculate_difficulty(self.blockchain),
+            difficulty=calculate_difficulty(self.blockchain, len(self.blockchain.blocks)),
             mining_reward=calculate_reward(self.blockchain),
         )
         generate_merkle_root(new_block)
