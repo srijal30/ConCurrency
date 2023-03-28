@@ -4,6 +4,7 @@ File where all the blockchain data model functionality will be stored
 
 from proto.schema_pb2 import Transaction, Block, BlockChain, Snapshot
 from crypto import hash_block, hash_transaction, validate_signature, load_public_key
+from time import time
 
 
 ### BLOCK
