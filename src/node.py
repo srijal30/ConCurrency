@@ -34,7 +34,7 @@ class MiningNode(MiningNodeServicer):
         self.miner_pub_key = miner_pub_key
         self.transaction_pool = []
         self.stopped = True
-        self.miner = MiningService(self)
+        #self.miner = MiningService(self)
         
         self.committed_snapshot = Snapshot()
         self.uncommitted_snapshot = Snapshot()
@@ -72,9 +72,9 @@ class MiningNode(MiningNodeServicer):
         new_block = Block(
             prev_hash=self.blockchain.blocks[-1].curr_hash, 
             trans=transactions_to_be_mined,
-            miner=self.miner_pub_key,
+            #miner=self.miner_pub_key,
             difficulty=calculate_difficulty(self.blockchain, len(self.blockchain.blocks)),
-            mining_reward=calculate_reward(self.blockchain),
+            reward=calculate_reward(self.blockchain),
         )
         generate_merkle_root(new_block)
         if not self.stopped:

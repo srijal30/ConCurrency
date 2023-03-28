@@ -94,7 +94,7 @@ def calculate_difficulty(blockchain : BlockChain, block_index : int, blocks_to_r
             difficulty = int(blockchain.blocks[block_index-1].difficulty * ratio)
     else:
         # Use the previous block's difficulty if not recalculating difficulty
-        difficulty = blockchain.blocks[block_index-1].difficulty
+        difficulty = int(blockchain.blocks[block_index-1].difficulty)
     return difficulty
 
 
@@ -105,7 +105,7 @@ def calculate_reward(chain: BlockChain) -> int:
     last_reward = last_block.reward
     last_timestamp = last_block.timestamp
     last_difficulty = calculate_difficulty(chain, len(chain.blocks) - 1)  # Use updated difficulty
-    time_since_last_block = time.time() - last_timestamp
+    time_since_last_block = time() - last_timestamp
     max_reward = 10  # maximum reward per block
     halving_interval = 500  # number of blocks after which reward is halved
     block_count = len(chain.blocks)
