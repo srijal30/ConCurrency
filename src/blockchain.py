@@ -75,7 +75,7 @@ def add_block(committed_snapshot: Snapshot, block: Block, chain: BlockChain) -> 
     return True
 
 
-def calculate_difficulty(blockchain, block_index, blocks_to_recalculate_difficulty=2016):
+def calculate_difficulty(blockchain : BlockChain, block_index : int, blocks_to_recalculate_difficulty=2016):
     # Recalculate difficulty every n blocks
     if block_index % blocks_to_recalculate_difficulty == 0 and block_index > 0:
         # Get the time it took to mine the previous n blocks
