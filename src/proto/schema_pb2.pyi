@@ -75,16 +75,6 @@ class RequestTransactionRequest(_message.Message):
     hash: str
     def __init__(self, hash: _Optional[str] = ...) -> None: ...
 
-class SendBlockReply(_message.Message):
-    __slots__ = []
-    def __init__(self) -> None: ...
-
-class SendBlockRequest(_message.Message):
-    __slots__ = ["block"]
-    BLOCK_FIELD_NUMBER: _ClassVar[int]
-    block: Block
-    def __init__(self, block: _Optional[_Union[Block, _Mapping]] = ...) -> None: ...
-
 class SendTransactionReply(_message.Message):
     __slots__ = []
     def __init__(self) -> None: ...

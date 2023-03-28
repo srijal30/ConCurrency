@@ -13,7 +13,7 @@ _sym_db = _symbol_database.Default()
 
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x0cschema.proto\x12\x08messages\"-\n\nBlockChain\x12\x1f\n\x06\x62locks\x18\x01 \x03(\x0b\x32\x0f.messages.Block\"\xc5\x01\n\x05\x42lock\x12\x11\n\tprev_hash\x18\x01 \x01(\t\x12\x11\n\tcurr_hash\x18\x02 \x01(\t\x12\r\n\x05nonce\x18\x03 \x01(\x04\x12\x13\n\x0bmerkle_root\x18\x04 \x01(\t\x12$\n\x05trans\x18\x05 \x03(\x0b\x32\x15.messages.Transaction\x12\x15\n\rminer_pub_key\x18\x06 \x01(\t\x12\x0e\n\x06reward\x18\x07 \x01(\x04\x12\x12\n\ndifficulty\x18\x08 \x01(\x04\x12\x11\n\ttimestamp\x18\t \x01(\x01\"\x82\x01\n\x0bTransaction\x12\x0c\n\x04hash\x18\x01 \x01(\t\x12\x16\n\x0esender_pub_key\x18\x02 \x01(\t\x12\x18\n\x10receiver_pub_key\x18\x03 \x01(\t\x12\x11\n\tsignature\x18\x04 \x01(\t\x12\x0e\n\x06\x61mount\x18\x05 \x01(\x04\x12\x10\n\x08sequence\x18\x06 \x01(\x04\"\x82\x01\n\x08Snapshot\x12\x32\n\x08\x61\x63\x63ounts\x18\x01 \x03(\x0b\x32 .messages.Snapshot.AccountsEntry\x1a\x42\n\rAccountsEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12 \n\x05value\x18\x02 \x01(\x0b\x32\x11.messages.Account:\x02\x38\x01\",\n\x07\x41\x63\x63ount\x12\x0f\n\x07\x62\x61lance\x18\x01 \x01(\x04\x12\x10\n\x08sequence\x18\x02 \x01(\x04\"6\n\x14\x41nnounceBlockRequest\x12\x1e\n\x05\x62lock\x18\x01 \x01(\x0b\x32\x0f.messages.Block\"\x14\n\x12\x41nnounceBlockReply\"2\n\x10SendBlockRequest\x12\x1e\n\x05\x62lock\x18\x01 \x01(\x0b\x32\x0f.messages.Block\"\x10\n\x0eSendBlockReply\"D\n\x16SendTransactionRequest\x12*\n\x0btransaction\x18\x01 \x01(\x0b\x32\x15.messages.Transaction\"\x16\n\x14SendTransactionReply\"\x1f\n\x0fGetBlockRequest\x12\x0c\n\x04hash\x18\x01 \x01(\t\"/\n\rGetBlockReply\x12\x1e\n\x05\x62lock\x18\x01 \x01(\x0b\x32\x0f.messages.Block\")\n\x19RequestTransactionRequest\x12\x0c\n\x04hash\x18\x01 \x01(\t\"E\n\x17RequestTransactionReply\x12*\n\x0btransaction\x18\x01 \x01(\x0b\x32\x15.messages.Transaction2\x9d\x03\n\x07Network\x12P\n\x0e\x61nnounce_block\x12\x1e.messages.AnnounceBlockRequest\x1a\x1c.messages.AnnounceBlockReply\"\x00\x12\x44\n\nsend_block\x12\x1a.messages.SendBlockRequest\x1a\x18.messages.SendBlockReply\"\x00\x12V\n\x10send_transaction\x12 .messages.SendTransactionRequest\x1a\x1e.messages.SendTransactionReply\"\x00\x12\x41\n\tget_block\x12\x19.messages.GetBlockRequest\x1a\x17.messages.GetBlockReply\"\x00\x12_\n\x13request_transaction\x12#.messages.RequestTransactionRequest\x1a!.messages.RequestTransactionReply\"\x00\x62\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x0cschema.proto\x12\x08messages\"-\n\nBlockChain\x12\x1f\n\x06\x62locks\x18\x01 \x03(\x0b\x32\x0f.messages.Block\"\xc5\x01\n\x05\x42lock\x12\x11\n\tprev_hash\x18\x01 \x01(\t\x12\x11\n\tcurr_hash\x18\x02 \x01(\t\x12\r\n\x05nonce\x18\x03 \x01(\x04\x12\x13\n\x0bmerkle_root\x18\x04 \x01(\t\x12$\n\x05trans\x18\x05 \x03(\x0b\x32\x15.messages.Transaction\x12\x15\n\rminer_pub_key\x18\x06 \x01(\t\x12\x0e\n\x06reward\x18\x07 \x01(\x04\x12\x12\n\ndifficulty\x18\x08 \x01(\x04\x12\x11\n\ttimestamp\x18\t \x01(\x01\"\x82\x01\n\x0bTransaction\x12\x0c\n\x04hash\x18\x01 \x01(\t\x12\x16\n\x0esender_pub_key\x18\x02 \x01(\t\x12\x18\n\x10receiver_pub_key\x18\x03 \x01(\t\x12\x11\n\tsignature\x18\x04 \x01(\t\x12\x0e\n\x06\x61mount\x18\x05 \x01(\x04\x12\x10\n\x08sequence\x18\x06 \x01(\x04\"\x82\x01\n\x08Snapshot\x12\x32\n\x08\x61\x63\x63ounts\x18\x01 \x03(\x0b\x32 .messages.Snapshot.AccountsEntry\x1a\x42\n\rAccountsEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12 \n\x05value\x18\x02 \x01(\x0b\x32\x11.messages.Account:\x02\x38\x01\",\n\x07\x41\x63\x63ount\x12\x0f\n\x07\x62\x61lance\x18\x01 \x01(\x04\x12\x10\n\x08sequence\x18\x02 \x01(\x04\"6\n\x14\x41nnounceBlockRequest\x12\x1e\n\x05\x62lock\x18\x01 \x01(\x0b\x32\x0f.messages.Block\"\x14\n\x12\x41nnounceBlockReply\"D\n\x16SendTransactionRequest\x12*\n\x0btransaction\x18\x01 \x01(\x0b\x32\x15.messages.Transaction\"\x16\n\x14SendTransactionReply\"\x1f\n\x0fGetBlockRequest\x12\x0c\n\x04hash\x18\x01 \x01(\t\"/\n\rGetBlockReply\x12\x1e\n\x05\x62lock\x18\x01 \x01(\x0b\x32\x0f.messages.Block\")\n\x19RequestTransactionRequest\x12\x0c\n\x04hash\x18\x01 \x01(\t\"E\n\x17RequestTransactionReply\x12*\n\x0btransaction\x18\x01 \x01(\x0b\x32\x15.messages.Transaction2\xd7\x02\n\x07Network\x12P\n\x0e\x61nnounce_block\x12\x1e.messages.AnnounceBlockRequest\x1a\x1c.messages.AnnounceBlockReply\"\x00\x12V\n\x10send_transaction\x12 .messages.SendTransactionRequest\x1a\x1e.messages.SendTransactionReply\"\x00\x12\x41\n\tget_block\x12\x19.messages.GetBlockRequest\x1a\x17.messages.GetBlockReply\"\x00\x12_\n\x13request_transaction\x12#.messages.RequestTransactionRequest\x1a!.messages.RequestTransactionReply\"\x00\x62\x06proto3')
 
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, globals())
 _builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, 'schema_pb2', globals())
@@ -38,22 +38,18 @@ if _descriptor._USE_C_DESCRIPTORS == False:
   _ANNOUNCEBLOCKREQUEST._serialized_end=639
   _ANNOUNCEBLOCKREPLY._serialized_start=641
   _ANNOUNCEBLOCKREPLY._serialized_end=661
-  _SENDBLOCKREQUEST._serialized_start=663
-  _SENDBLOCKREQUEST._serialized_end=713
-  _SENDBLOCKREPLY._serialized_start=715
-  _SENDBLOCKREPLY._serialized_end=731
-  _SENDTRANSACTIONREQUEST._serialized_start=733
-  _SENDTRANSACTIONREQUEST._serialized_end=801
-  _SENDTRANSACTIONREPLY._serialized_start=803
-  _SENDTRANSACTIONREPLY._serialized_end=825
-  _GETBLOCKREQUEST._serialized_start=827
-  _GETBLOCKREQUEST._serialized_end=858
-  _GETBLOCKREPLY._serialized_start=860
-  _GETBLOCKREPLY._serialized_end=907
-  _REQUESTTRANSACTIONREQUEST._serialized_start=909
-  _REQUESTTRANSACTIONREQUEST._serialized_end=950
-  _REQUESTTRANSACTIONREPLY._serialized_start=952
-  _REQUESTTRANSACTIONREPLY._serialized_end=1021
-  _NETWORK._serialized_start=1024
-  _NETWORK._serialized_end=1437
+  _SENDTRANSACTIONREQUEST._serialized_start=663
+  _SENDTRANSACTIONREQUEST._serialized_end=731
+  _SENDTRANSACTIONREPLY._serialized_start=733
+  _SENDTRANSACTIONREPLY._serialized_end=755
+  _GETBLOCKREQUEST._serialized_start=757
+  _GETBLOCKREQUEST._serialized_end=788
+  _GETBLOCKREPLY._serialized_start=790
+  _GETBLOCKREPLY._serialized_end=837
+  _REQUESTTRANSACTIONREQUEST._serialized_start=839
+  _REQUESTTRANSACTIONREQUEST._serialized_end=880
+  _REQUESTTRANSACTIONREPLY._serialized_start=882
+  _REQUESTTRANSACTIONREPLY._serialized_end=951
+  _NETWORK._serialized_start=954
+  _NETWORK._serialized_end=1297
 # @@protoc_insertion_point(module_scope)

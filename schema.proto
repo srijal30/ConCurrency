@@ -48,9 +48,6 @@ service Network{
   //announce block from client to server
   rpc announce_block(AnnounceBlockRequest) returns (AnnounceBlockReply) {};
   
-  //send block from client to server
-  rpc send_block(SendBlockRequest) returns (SendBlockReply) {};
-  
   //send transaction from client to server
   rpc send_transaction(SendTransactionRequest) returns (SendTransactionReply) {};
 
@@ -72,13 +69,6 @@ message AnnounceBlockRequest{
 }
 
 message AnnounceBlockReply{
-}
-
-message SendBlockRequest{
-  Block block = 1;
-}
-
-message SendBlockReply{
 }
 
 message SendTransactionRequest{

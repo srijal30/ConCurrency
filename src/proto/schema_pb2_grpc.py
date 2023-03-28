@@ -19,11 +19,6 @@ class NetworkStub(object):
                 request_serializer=schema__pb2.AnnounceBlockRequest.SerializeToString,
                 response_deserializer=schema__pb2.AnnounceBlockReply.FromString,
                 )
-        self.send_block = channel.unary_unary(
-                '/messages.Network/send_block',
-                request_serializer=schema__pb2.SendBlockRequest.SerializeToString,
-                response_deserializer=schema__pb2.SendBlockReply.FromString,
-                )
         self.send_transaction = channel.unary_unary(
                 '/messages.Network/send_transaction',
                 request_serializer=schema__pb2.SendTransactionRequest.SerializeToString,
@@ -47,13 +42,6 @@ class NetworkServicer(object):
     def announce_block(self, request, context):
         """/ CLIENT SENDS
         announce block from client to server
-        """
-        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-        context.set_details('Method not implemented!')
-        raise NotImplementedError('Method not implemented!')
-
-    def send_block(self, request, context):
-        """send block from client to server
         """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
@@ -88,11 +76,6 @@ def add_NetworkServicer_to_server(servicer, server):
                     servicer.announce_block,
                     request_deserializer=schema__pb2.AnnounceBlockRequest.FromString,
                     response_serializer=schema__pb2.AnnounceBlockReply.SerializeToString,
-            ),
-            'send_block': grpc.unary_unary_rpc_method_handler(
-                    servicer.send_block,
-                    request_deserializer=schema__pb2.SendBlockRequest.FromString,
-                    response_serializer=schema__pb2.SendBlockReply.SerializeToString,
             ),
             'send_transaction': grpc.unary_unary_rpc_method_handler(
                     servicer.send_transaction,
@@ -133,23 +116,6 @@ class Network(object):
         return grpc.experimental.unary_unary(request, target, '/messages.Network/announce_block',
             schema__pb2.AnnounceBlockRequest.SerializeToString,
             schema__pb2.AnnounceBlockReply.FromString,
-            options, channel_credentials,
-            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
-
-    @staticmethod
-    def send_block(request,
-            target,
-            options=(),
-            channel_credentials=None,
-            call_credentials=None,
-            insecure=False,
-            compression=None,
-            wait_for_ready=None,
-            timeout=None,
-            metadata=None):
-        return grpc.experimental.unary_unary(request, target, '/messages.Network/send_block',
-            schema__pb2.SendBlockRequest.SerializeToString,
-            schema__pb2.SendBlockReply.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
