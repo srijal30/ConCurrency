@@ -38,45 +38,65 @@ message Account{
 }
 
 
-///Networking Model
-service MiningNode{
-  // returns a list of requested blocks
-  rpc get_block(GetBlockRequest) returns (GetBlockReply) {}
-  // announces a newly mined block
-  rpc announce_block(AnnounceBlockRequest) returns (AnnounceBlockReply) {}
-  // sends a transaction over the network
-  rpc send_transaction(SendTransactionRequest) returns (SendTransactionReply) {}
-  // sends the entire blockchain over the network
-  rpc send_blockchain(SendBlockchainRequest) returns(stream SendBlockchainReply) {}
+service Network{
+  /// CLIENT SENDS
+  //announce block from client to server
+  rpc announce_block(AnnounceBlockRequest) returns (AnnounceBlockReply) {};
+  
+  //send block from client to server
+  rpc send_block(SendBlockRequest) returns (SendBlockReply) {};
+  
+  //send transaction from client to server
+  rpc send_transaction(SendTransactionRequest) returns (SendTransactionReply) {};
+
+  /// CLIENT RECEIVES
+  //receive block from server to client
+  rpc get_block(GetBlockRequest) returns (GetBlockReply) {};
+
+  //receive transaction from server to client
+  rpc request_transaction(RequestTransactionRequest) returns (RequestTransactionReply) {};
+
+  /*
+  TO DO:
+  - add in rpc that are for querying (so far only methods that are essential for consensus are added)
+  */
 }
 
-// get_block
-message GetBlockRequest {
-  repeated string hashes = 1; // should we request indexes instead?
-}
-message GetBlockReply {
-  repeated Block blocks = 1;
-}
-
-// announce_block
 message AnnounceBlockRequest{
   Block block = 1;
 }
+
 message AnnounceBlockReply{
 }
 
-// send_transaction
-message SendTransactionRequest{
- repeated Transaction trans = 1; 
+message SendBlockRequest{
+  Block block = 1;
 }
+
+message SendBlockReply{
+}
+
+message SendTransactionRequest{
+  Transaction transaction = 1;
+}
+
 message SendTransactionReply{
 }
 
-// send_blockchain
-message SendBlockchainRequest{
-  optional string since_hash = 1; // if the requester wants all blocks since specified hash
+// QUESTION: how should the block be requested?
+message GetBlockRequest{
+  string hash = 1;  
 }
-message SendBlockchainReply{
-  Block cur_block = 1;
-  bool latest_block = 2; // is true if this is the latest block
+
+message GetBlockReply{
+  Block block = 1;
 }
+
+message RequestTransactionRequest{
+  string hash = 1; //this might get updated to uuid in the future
+}
+
+message RequestTransactionReply{
+  Transaction transaction = 1;
+}
+
