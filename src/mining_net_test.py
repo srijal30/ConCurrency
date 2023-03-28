@@ -10,7 +10,7 @@ from networking import *
 from blockchain import *
 from proto.schema_pb2 import *
 from crypto import *
-
+from node import *
 
 MAX_BLOCKS = 2
 users = [create_keys() for i in range(10)]
