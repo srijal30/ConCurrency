@@ -4,6 +4,7 @@ File where all the blockchain data model functionality will be stored
 
 from proto.schema_pb2 import Transaction, Block, BlockChain, Snapshot
 from crypto import hash_block, hash_transaction, validate_signature, load_public_key
+from time import time
 
 
 ### BLOCK
@@ -86,7 +87,7 @@ def calculate_difficulty(blockchain : BlockChain, block_index : int, blocks_to_r
         ratio = prev_time / ideal_time
         if ratio > 1:
             # Difficulty should be decreased to make mining easier
-            difficulty = int(blockchain[block_index-1]['difficulty'] * (1 / ratio))
+            difficulty = int(blockchain[block_index-1]['difficulty'] / ratio)
         else:
             # Difficulty should be increased to make mining harder
             difficulty = int(blockchain[block_index-1]['difficulty'] * ratio)
