@@ -9,22 +9,23 @@ from crypto import hash_block, hash_transaction, validate_signature, load_public
 ### BLOCK
 def validate_block(committed_snapshot: Snapshot, block: Block, chain: BlockChain) -> bool:
     """Validates block hash correctness and transaction validity. Assumes commited_snapshot is valid."""
-    if calculate_difficulty(chain, chain.blocks.index(block)) != block.difficulty:
-        return False
-    if calculate_reward(chain) != block.reward:
-        return False
-    if block.curr_hash != hash_block(block) or block.curr_hash[0:block.difficulty] != "0"*block.difficulty:
-        return False
-    added_transactions = []
-    for tran in block.trans:
-        added_transactions.append(tran)
-        # check if transaction is valid and amount is valid
-        if not validate_transaction(tran) or not replay_transaction(committed_snapshot, tran):
-            # revert
-            for added_tran in reversed(added_transactions):
-                undo_transaction(committed_snapshot, added_tran)
-            # return false
+    if not len(chain.blocks) == 0:
+        if calculate_difficulty(chain, chain.blocks[-1]) != block.difficulty:
             return False
+        if calculate_reward(chain) != block.reward:
+            return False
+        if block.curr_hash != hash_block(block) or block.curr_hash[0:block.difficulty] != "0"*block.difficulty:
+            return False
+        added_transactions = []
+        for tran in block.trans:
+            added_transactions.append(tran)
+            # check if transaction is valid and amount is valid
+            if not validate_transaction(tran) or not replay_transaction(committed_snapshot, tran):
+                # revert
+                for added_tran in reversed(added_transactions):
+                    undo_transaction(committed_snapshot, added_tran)
+                # return false
+                return False
     return True
 
 # SEEMS USELESS
@@ -35,7 +36,7 @@ def validate_block(committed_snapshot: Snapshot, block: Block, chain: BlockChain
 #     block.trans.append(transact)
 #     block.curr_hash = hash_block(block)
 #     return True
-
+###
 
 ### TRANSACTION
 def validate_transaction(tran: Transaction) -> bool:
@@ -79,20 +80,20 @@ def calculate_difficulty(blockchain : BlockChain, block_index : int, blocks_to_r
     # Recalculate difficulty every n blocks
     if block_index % blocks_to_recalculate_difficulty == 0 and block_index > 0:
         # Get the time it took to mine the previous n blocks
-        prev_time = (blockchain[block_index-1]['timestamp'] - blockchain[block_index-blocks_to_recalculate_difficulty]['timestamp']) / 1000
+        prev_time = (blockchain.blocks[block_index-1].timestamp - blockchain.blocks[block_index-blocks_to_recalculate_difficulty].timestamp) / 1000
         # Calculate the ideal time it should have taken to mine n blocks
         ideal_time = blocks_to_recalculate_difficulty * 10 * 60  # 10 minutes per block
         # Adjust difficulty based on the ratio of actual time to ideal time
         ratio = prev_time / ideal_time
         if ratio > 1:
             # Difficulty should be decreased to make mining easier
-            difficulty = int(blockchain[block_index-1]['difficulty'] * (1 / ratio))
+            difficulty = int(blockchain.blocks[block_index-1].difficulty * (1 / ratio))
         else:
             # Difficulty should be increased to make mining harder
-            difficulty = int(blockchain[block_index-1]['difficulty'] * ratio)
+            difficulty = int(blockchain.blocks[block_index-1].difficulty * ratio)
     else:
         # Use the previous block's difficulty if not recalculating difficulty
-        difficulty = blockchain[block_index-1]['difficulty']
+        difficulty = blockchain.blocks[block_index-1].difficulty
     return difficulty
 
 
@@ -100,7 +101,7 @@ def calculate_difficulty(blockchain : BlockChain, block_index : int, blocks_to_r
 def calculate_reward(chain: BlockChain) -> int:
     """Calculates the mining reward for the next block"""
     last_block = chain.blocks[-1]
-    last_reward = last_block.mining_reward
+    last_reward = last_block.reward
     last_timestamp = last_block.timestamp
     last_difficulty = calculate_difficulty(chain, len(chain.blocks) - 1)  # Use updated difficulty
     time_since_last_block = time.time() - last_timestamp
