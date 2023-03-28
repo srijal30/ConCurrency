@@ -60,7 +60,8 @@ class MiningNode(MiningNodeServicer):
 
     def mine_next_block(self):
         """Creates and starts mining a new block."""
-        if len(self.transaction_pool) > 10:
+        MAX_BLOCKS = 10
+        if len(self.transaction_pool) > MAX_BLOCKS:
             transactions_to_be_mined : list = self.transaction_pool[0:10]
         else:
             transactions_to_be_mined : list = self.transaction_pool[0:]
