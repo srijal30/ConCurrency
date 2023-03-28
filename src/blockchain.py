@@ -9,7 +9,7 @@ from crypto import hash_block, hash_transaction, validate_signature, load_public
 ### BLOCK
 def validate_block(committed_snapshot: Snapshot, block: Block, chain: BlockChain) -> bool:
     """Validates block hash correctness and transaction validity. Assumes commited_snapshot is valid."""
-    if calculate_difficulty(chain) != block.difficulty:
+    if calculate_difficulty(chain, chain.blocks.index(block)) != block.difficulty:
         return False
     if calculate_reward(chain) != block.reward:
         return False
