@@ -11,6 +11,7 @@ from proto.schema_pb2_grpc import NetworkServicer, NetworkStub, add_NetworkServi
 from proto.schema_pb2 import *
 from blockchain import *
 from crypto import *
+from loader import *
 
 # TO DO: 
 # - type definitions
@@ -66,7 +67,7 @@ class Network(NetworkServicer):
                 return GetBlockReply(
                     block=block
                 )
-        return GetBlockReply()
+        raise KeyError
     
     def request_transaction(self, request: RequestTransactionRequest, context) -> RequestTransactionReply:
         """Returns transaction with requested hash if found."""
@@ -81,9 +82,8 @@ class Network(NetworkServicer):
 
 # QUICK TEST THAT REQUESTS BLOCK FROM SERVER
 if __name__ == "__main__":
-    def test_server():
-        # set up the test
-        blockchain = BlockChain()
+    try:
+        blockchain = load_blockchain("blockchain.data")
         test_block = Block(
                 curr_hash="1"*64,
                 prev_hash="0"*64,
@@ -97,26 +97,8 @@ if __name__ == "__main__":
         add_NetworkServicer_to_server(service, server)
         server.add_insecure_port("[::]:50001")
         server.start()
-        server.wait_for_termination(timeout=3.0)
-        print("server terminated")
-
-    def test_client():
-        request = GetBlockRequest(
-            hash="1"*64
-        )
-        channel = grpc.insecure_channel('localhost:50001')
-        stub =  NetworkStub(channel)
-        received_block = stub.get_block(request)
-        print("\nclient received this from the server:\n", received_block)
-    
-    import threading
-    s = threading.Thread(target=test_server)
-    print("starting server...")
-    s.start()
-
-    c = threading.Thread(target=test_client)
-    print("\nstarting client and sending request...")
-    c.start()
-
-    c.join()
-    s.join()
+        server.wait_for_termination()
+    except:
+        print("server died")
+        store_blockchain(blockchain, "blockchain.data")
+        raise
