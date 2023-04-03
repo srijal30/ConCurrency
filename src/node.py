@@ -26,7 +26,7 @@ from proto.schema_pb2 import (
 from mining import MiningService
 
 
-
+# TO DO: rewrite this entire class
 # TO DO: add a way to choose whether to start or join the network and load old data from file
 class MiningNode(MiningNodeServicer):
     """Implementation of a mining node"""

@@ -1,3 +1,6 @@
+# For storage
+*.data
+
 # for vim nerds like Salaj and Jeff
 *.swp 
 

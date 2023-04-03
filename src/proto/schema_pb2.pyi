@@ -52,40 +52,38 @@ class BlockChain(_message.Message):
     def __init__(self, blocks: _Optional[_Iterable[_Union[Block, _Mapping]]] = ...) -> None: ...
 
 class GetBlockReply(_message.Message):
-    __slots__ = ["blocks"]
-    BLOCKS_FIELD_NUMBER: _ClassVar[int]
-    blocks: _containers.RepeatedCompositeFieldContainer[Block]
-    def __init__(self, blocks: _Optional[_Iterable[_Union[Block, _Mapping]]] = ...) -> None: ...
+    __slots__ = ["block"]
+    BLOCK_FIELD_NUMBER: _ClassVar[int]
+    block: Block
+    def __init__(self, block: _Optional[_Union[Block, _Mapping]] = ...) -> None: ...
 
 class GetBlockRequest(_message.Message):
-    __slots__ = ["hashes"]
-    HASHES_FIELD_NUMBER: _ClassVar[int]
-    hashes: _containers.RepeatedScalarFieldContainer[str]
-    def __init__(self, hashes: _Optional[_Iterable[str]] = ...) -> None: ...
+    __slots__ = ["hash"]
+    HASH_FIELD_NUMBER: _ClassVar[int]
+    hash: str
+    def __init__(self, hash: _Optional[str] = ...) -> None: ...
 
-class SendBlockchainReply(_message.Message):
-    __slots__ = ["cur_block", "latest_block"]
-    CUR_BLOCK_FIELD_NUMBER: _ClassVar[int]
-    LATEST_BLOCK_FIELD_NUMBER: _ClassVar[int]
-    cur_block: Block
-    latest_block: bool
-    def __init__(self, cur_block: _Optional[_Union[Block, _Mapping]] = ..., latest_block: bool = ...) -> None: ...
+class RequestTransactionReply(_message.Message):
+    __slots__ = ["transaction"]
+    TRANSACTION_FIELD_NUMBER: _ClassVar[int]
+    transaction: Transaction
+    def __init__(self, transaction: _Optional[_Union[Transaction, _Mapping]] = ...) -> None: ...
 
-class SendBlockchainRequest(_message.Message):
-    __slots__ = ["since_hash"]
-    SINCE_HASH_FIELD_NUMBER: _ClassVar[int]
-    since_hash: str
-    def __init__(self, since_hash: _Optional[str] = ...) -> None: ...
+class RequestTransactionRequest(_message.Message):
+    __slots__ = ["hash"]
+    HASH_FIELD_NUMBER: _ClassVar[int]
+    hash: str
+    def __init__(self, hash: _Optional[str] = ...) -> None: ...
 
 class SendTransactionReply(_message.Message):
     __slots__ = []
     def __init__(self) -> None: ...
 
 class SendTransactionRequest(_message.Message):
-    __slots__ = ["trans"]
-    TRANS_FIELD_NUMBER: _ClassVar[int]
-    trans: _containers.RepeatedCompositeFieldContainer[Transaction]
-    def __init__(self, trans: _Optional[_Iterable[_Union[Transaction, _Mapping]]] = ...) -> None: ...
+    __slots__ = ["transaction"]
+    TRANSACTION_FIELD_NUMBER: _ClassVar[int]
+    transaction: Transaction
+    def __init__(self, transaction: _Optional[_Union[Transaction, _Mapping]] = ...) -> None: ...
 
 class Snapshot(_message.Message):
     __slots__ = ["accounts"]
