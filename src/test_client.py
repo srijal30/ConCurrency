@@ -2,8 +2,8 @@ import sys
 sys.path.append("src/proto/")
 
 from proto.schema_pb2 import *
-import grpc
-from proto.schema_pb2_grpc import *
+from proto.schema_pb2_grpc import *  # grpc is imported here
+
 
 if __name__ == "__main__":
     request = GetBlockRequest(
