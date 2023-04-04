@@ -1,12 +1,12 @@
 import sys
-sys.path.append("src/proto/")
+sys.path.append("src/model/proto/")
 
 import concurrent.futures as futures
 from typing import List
 
-from loader import load_blockchain, store_blockchain
-from proto.schema_pb2_grpc import *  # grpc is imported here
-from proto.schema_pb2 import *
+from model.loader import load_blockchain, store_blockchain
+from model.proto.schema_pb2_grpc import *  # grpc is imported here
+from model.proto.schema_pb2 import *
 
 
 if __name__ == "__main__":

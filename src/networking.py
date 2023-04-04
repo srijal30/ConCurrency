@@ -3,102 +3,65 @@ File that contains the networking functions
 """
 
 import sys
-sys.path.append("src/proto/")
+sys.path.append("src/model/proto/")
+from model.proto.schema_pb2_grpc import NetworkServicer
+from model.proto.schema_pb2 import *
+from model.blockchain import TalkingStick
 
-import grpc
-import concurrent.futures as futures
-from proto.schema_pb2_grpc import NetworkServicer, NetworkStub, add_NetworkServicer_to_server
-from proto.schema_pb2 import *
-from blockchain import *
-from crypto import *
-from loader import *
 
 # TO DO: 
-# - type definitions
+# - SEPERATE
 
 class Network(NetworkServicer):
     # the arguments should all be wrapper classes w/ locks
-    def __init__(self, chain, snap1, snap2, pool):
-        self.blockchain = chain
-        self.uncommitted_snap = snap1
-        self.committed_snap = snap2
-        self.transaction_pool = pool
+    def __init__(self, stick: TalkingStick) -> None:
+        self.model: TalkingStick = stick
 
+    # make this take the callback
     def announce_block(self, request: AnnounceBlockRequest, context) -> AnnounceBlockReply:
         """Adds announced block to the chain if it is valid."""
-        latest_block_hash = self.blockchain.blocks[-1].curr_hash
-        if request.block.prev_hash == latest_block_hash and validate_block(request.block):
+        new_block = request.block
+        latest_hash = self.model.blockchain.blocks[-1].curr_hash
+        # verify that the latest block is correct
+        if new_block.prev_hash == latest_hash and self.model.validate_block(new_block):
             # add the block
-
-            # self.blockchain.lock()
-            # self.committed_snap.lock()
-            add_block(self.committed_snap, request.block, self.blockchain)
-            # self.blockchain.unlock()
-            # self.committed_snap.unlock()
-            
+            self.model.add_block(new_block)
             # tie loose ends with uncommited snapshot and transaction pool
-            # THIS NEEDS REVIEW (also maybe add this functionality to datamodel)
-            
-            # self.transaction_pool.lock()
-            # self.uncommitted_snap.lock()
-            for tran in request.block.trans:
-                if tran in self.transaction_pool: # will this code even work? will this compare memory addresses?
-                    self.transaction_pool.remove(tran)
-                else: # if not in transaction pool, it means we have to add it to uncommited snapshot
-                    replay_transaction(self.uncommitted_snapshot, tran)
-            # self.transaction_pool.unlock()
-            # self.uncommitted_snap.unlock()
+            # THIS NEEDS REVIEW (maybe move this functionality to datamodel)
+            for tran in new_block.trans:
+                if self.model.pool_has(tran.hash):
+                    self.model.pool_remove(tran.hash)
+                else:
+                    self.model.replay_uncommitted(tran)
         return AnnounceBlockReply()
-    
+
+
     def send_transaction(self, request: SendTransactionRequest, context) -> SendTransactionReply:
         """Adds transaction to transaction pool if it is valid. Also updates uncommited snapshot."""
-        # self.uncommitted_snap.lock()
-        if validate_transaction(request.transaction) and replay_transaction(self.uncommitted_snap, request.transaction):
-            # self.transaction_pool.lock()
-            self.transaction_pool.append(request.transaction)
-            # self.transaction_pool.unlock()
-        # self.uncommitted_snap.unlock()
+        new_tran = request.transaction
+        if self.model.validate_transaction(new_tran) and self.model.replay_uncommitted(new_tran):
+            self.model.pool_add(new_tran)
         return SendTransactionReply()    
 
+
+    # inefficient
     def get_block(self, request: GetBlockRequest, context) -> GetBlockReply:
-        """Returns block with requested hash if found."""
-        for block in self.blockchain.blocks:
+        """Returns block with requested hash if found. Else returns KeyError."""
+        for block in self.model.blockchain.blocks:
             if block.curr_hash == request.hash:
                 return GetBlockReply(
                     block=block
                 )
         raise KeyError
     
+
+    # inefficient
     def request_transaction(self, request: RequestTransactionRequest, context) -> RequestTransactionReply:
-        """Returns transaction with requested hash if found."""
-        for block in self.blockchain.blocks:
+        """Returns transaction with requested hash if found. Else returns KeyError"""
+        for block in self.model.blockchain.blocks:
             for tran in block.trans:
                 if tran.hash == request.hash:
                     return RequestTransactionReply(
                         transaction=tran
                     )
-        return RequestTransactionReply()
-
-
-# QUICK TEST THAT REQUESTS BLOCK FROM SERVER
-if __name__ == "__main__":
-    try:
-        blockchain = load_blockchain("blockchain.data")
-        test_block = Block(
-                curr_hash="1"*64,
-                prev_hash="0"*64,
-                miner_pub_key="Satoshi Nakamoto"  
-        )
-        blockchain.blocks.append(test_block)
-        pool : List[Transaction] = []
-        # starting the server
-        server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
-        service = Network(blockchain, Snapshot(), Snapshot(), pool)
-        add_NetworkServicer_to_server(service, server)
-        server.add_insecure_port("[::]:50001")
-        server.start()
-        server.wait_for_termination()
-    except:
-        print("server died")
-        store_blockchain(blockchain, "blockchain.data")
-        raise
+        raise KeyError

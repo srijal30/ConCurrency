@@ -3,7 +3,7 @@ File where all the cryptography functionality will be stored
 """
 
 from typing import Any, Tuple, List
-from proto.schema_pb2 import Block, Transaction
+from model.proto.schema_pb2 import Block, Transaction
 from hashlib import sha256
 
 from cryptography.exceptions import InvalidSignature

@@ -1,8 +1,8 @@
 import sys
-sys.path.append("src/proto/")
+sys.path.append("src/model/proto/")
 
-from proto.schema_pb2 import *
-from proto.schema_pb2_grpc import *  # grpc is imported here
+from model.proto.schema_pb2 import *
+from model.proto.schema_pb2_grpc import *  # grpc is imported here
 
 
 if __name__ == "__main__":
