@@ -1,4 +1,4 @@
-from proto.schema_pb2 import *
+from model.proto.schema_pb2 import *
 
 def store_blockchain(chain: BlockChain, path: str) -> None:
     """"""

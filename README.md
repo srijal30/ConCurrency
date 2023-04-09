@@ -19,7 +19,7 @@ pip install -r requirements.txt
 * **OPTIONAL:** To compile the ProtoBuf files locally, run the following commands
 ```
 pip install -r dev-requirements.txt
-python -m grpc_tools.protoc -I. --python_out=src/proto --pyi_out=src/proto --grpc_python_out=src/proto schema.proto
+python -m grpc_tools.protoc -I. --python_out=src/model/proto --pyi_out=src/model/proto --grpc_python_out=src/model/proto schema.proto
 ```
  
 

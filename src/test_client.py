@@ -1,4 +1,5 @@
 import sys
+import os
 sys.path.append("src/model/proto/")
 
 from model.proto.schema_pb2 import *

@@ -21,7 +21,9 @@ if __name__ == "__main__":
         pool : List[Transaction] = []
         # starting the server
         server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
-        service = Network(blockchain, Snapshot(), Snapshot(), pool)
+        #service = Network(blockchain, Snapshot(), Snapshot(), pool) 
+        print('here')
+        service = Network()
         add_NetworkServicer_to_server(service, server)
         server.add_insecure_port("[::]:50001")
         server.start()
