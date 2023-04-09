@@ -15,6 +15,5 @@ if __name__ == "__main__":
 
     received_block = stub.get_block(request)
 
-    print("here")
     print("\nclient received this from the server:\n", received_block)
     pass
