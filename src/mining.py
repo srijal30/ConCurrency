@@ -60,6 +60,11 @@ class MiningService():
             block.curr_hash = hash_block(block)
         callback(block)
 
+    def callback(self, block: Block):
+        print("success")
+        print(block)
+        self.model.blockchain.blocks.append(block)
+
 
 if __name__ == "__main__":
     pub_key =  "asdasdfasdfasdfasldkf"

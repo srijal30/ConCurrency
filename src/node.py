@@ -27,15 +27,22 @@ class MiningNode():
 
         # give an option to load all the data later (for now create new)
         model: TalkingStick = TalkingStick()
-
+        # genesis test
+        test_block = Block(
+                curr_hash="1"*64,
+                prev_hash="0"*64,
+                miner_pub_key="Satoshi Nakamoto"  
+        )
+        model.blockchain.blocks.append(test_block)
+        print(model.blockchain)
         # we have to make miner check if it is mining the right block
-        self.miner = MiningService(model)  # this might be renamed
+        self.miner = MiningService(self.miner_pub_key, model)  # this might be renamed
         self.server = Network(model)
 
     def start(self) -> None:
         """Starts the mining node."""
         # testing
-        self.miner.mine_next_block(self.miner.mining_sucess)
+        self.miner.mine_next_block(self.miner.callback)
         pass
 
     def stop(self) -> None:
