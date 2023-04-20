@@ -12,6 +12,7 @@ from model.proto.schema_pb2_grpc import add_NetworkServicer_to_server
 from model.proto.schema_pb2 import *
 from node import *
 
+##generate keys in ../my keys/ please!
 with open('../my keys/public_key.pem', 'rb') as f:
     v = f.read()
 public_key : str = v
