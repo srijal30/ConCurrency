@@ -7,7 +7,7 @@ sys.path.append("src/model/proto/")
 from model.proto.schema_pb2_grpc import NetworkServicer
 from model.proto.schema_pb2 import *
 from model.blockchain import TalkingStick
-
+from threading import get_ident
 
 # TO DO: 
 # - SEPERATE
@@ -20,6 +20,7 @@ class Network(NetworkServicer):
     # make this take the callback
     def announce_block(self, request: AnnounceBlockRequest, context) -> AnnounceBlockReply:
         """Adds announced block to the chain if it is valid."""
+        print("announce block debug "+str(get_ident()))
         new_block = request.block
         latest_hash = self.model.blockchain.blocks[-1].curr_hash
         # verify that the latest block is correct

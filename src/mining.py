@@ -23,9 +23,14 @@ class MiningService():
 
     def mine_next_block(self, callback: Callable):
         new_block = self.prepare_next_block()
-        self.current_thread = Thread(target=self._mine, args=(new_block, callback))
-        self.current_thread.start()
+        print("mine_next_block debug")
+        #comment out to remove threading
+        #self.current_thread = Thread(target=self._mine, args=(new_block, callback))
+        #self.current_thread.start()
+        #self.current_thread.join()
+        self._mine(new_block, callback)
         self.mine_next_block(callback)
+
 
 
     def prepare_next_block(self) -> Block:
@@ -50,14 +55,17 @@ class MiningService():
 
     def _mine(self, block: Block, callback: Callable) -> None: 
         """Mines blocks until signed hash is generated."""
+        print("starting mining")
         block.nonce = 0
         block.curr_hash = hash_block(block)
         while block.curr_hash[0:block.difficulty] != "0"*block.difficulty:
             # stops mining if the prev_hash is no longer valid 
             if not self.model.blockchain.blocks[-1].curr_hash == block.prev_hash:
+                print("we are lozers some1 else myne first uwu :c")
                 return
             block.nonce += 1
             block.curr_hash = hash_block(block)
+        print("finish mining")
         callback(block)
 
     def callback(self, block: Block):
