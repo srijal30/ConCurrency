@@ -22,6 +22,7 @@ class Network(NetworkServicer):
         # verify that the latest block is correct
         if new_block.prev_hash == latest_hash and self.model.validate_block(new_block):
             # add the block
+            print("the network block was valid\n")
             self.model.add_block(new_block)
             # tie loose ends with uncommited snapshot and transaction pool
             # THIS NEEDS REVIEW (maybe move this functionality to datamodel)
