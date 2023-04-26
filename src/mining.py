@@ -55,7 +55,7 @@ class MiningService():
         while block.curr_hash[0:block.difficulty] != "0"*block.difficulty:
             # stops mining if the prev_hash is no longer valid 
             if not self.model.blockchain.blocks[-1].curr_hash == block.prev_hash:
-                print("someone else finished mining first")
+                print("new block is valid so stopping mining\n")
                 return
             block.nonce += 1
             block.curr_hash = hash_block(block)

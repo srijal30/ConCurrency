@@ -15,7 +15,8 @@ class Network(NetworkServicer):
     # make this take the callback
     def announce_block(self, request: AnnounceBlockRequest, context) -> AnnounceBlockReply:
         """Adds announced block to the chain if it is valid."""
-        print("checking if network block is valid\n")
+        print("someone elsed finished mining first")
+        print(request.block)
         new_block = request.block
         latest_hash = self.model.blockchain.blocks[-1].curr_hash
         # verify that the latest block is correct
