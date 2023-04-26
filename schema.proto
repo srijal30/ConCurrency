@@ -57,7 +57,13 @@ service Network{
 
   //receive transaction from server to client
   rpc request_transaction(RequestTransactionRequest) returns (RequestTransactionReply) {};
+  
+  //receive length of chain from other servers
+  rpc request_chain_length(RequestChainLength) returns (RequestChainLengthReply) {};
 
+  //receive missing blocks??
+  //receive all block hashes??
+  
   /*
   TO DO:
   - add in rpc that are for querying (so far only methods that are essential for consensus are added)
