@@ -3,6 +3,7 @@ File that contains the mining service code.
 
 TO DO:
 - make this independent from all other code (except data model)
+- MAX_TRANSACTIONS constnat should be moved somewhere else
 """
 
 from typing import Callable
@@ -23,15 +24,9 @@ class MiningService():
 
     def mine_next_block(self, callback: Callable):
         new_block = self.prepare_next_block()
-        print("mine_next_block debug")
-        #comment out to remove threading
-        #self.current_thread = Thread(target=self._mine, args=(new_block, callback))
-        #self.current_thread.start()
-        #self.current_thread.join()
+        print("new block prepared\n")
         self._mine(new_block, callback)
         self.mine_next_block(callback)
-
-
 
     def prepare_next_block(self) -> Block:
         # setup the new block
@@ -52,53 +47,17 @@ class MiningService():
         generate_merkle_root(new_block)
         return new_block
 
-
     def _mine(self, block: Block, callback: Callable) -> None: 
         """Mines blocks until signed hash is generated."""
-        print("starting mining")
+        print("starting mining\n")
         block.nonce = 0
         block.curr_hash = hash_block(block)
         while block.curr_hash[0:block.difficulty] != "0"*block.difficulty:
             # stops mining if the prev_hash is no longer valid 
             if not self.model.blockchain.blocks[-1].curr_hash == block.prev_hash:
-                print("we are lozers some1 else myne first uwu :c")
+                print("someone else finished mining first")
                 return
             block.nonce += 1
             block.curr_hash = hash_block(block)
-        print("finish mining")
+        print("finished mining")
         callback(block)
-
-    def callback(self, block: Block):
-        print("success")
-        print(block)
-        self.model.blockchain.blocks.append(block)
-
-
-if __name__ == "__main__":
-    pub_key =  "asdasdfasdfasdfasldkf"
-    stick = TalkingStick()
-
-    # manually create genesis
-    genesis = Block(
-        prev_hash="0"*64,
-        miner_pub_key="jeff"
-    ) 
-    genesis.curr_hash = hash_block(genesis)
-    stick.blockchain.blocks.append(genesis)
-
-    def callback(block: Block):
-        print("successfully mined block")
-        print(block)
-        if stick.add_block(block):
-            # clean up the pool & snapshot (THIS CODE DNRY)
-            for tran in block.trans:
-                if stick.pool_has(tran.hash):
-                    stick.pool_remove(tran.hash)
-                else:
-                    stick.replay_uncommitted(tran)
-            # announce the block (STUB)
-
-
-    tester = MiningService(pub_key, stick)
-    tester.mine_next_block(callback)
-    pass

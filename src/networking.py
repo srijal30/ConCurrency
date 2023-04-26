@@ -2,15 +2,10 @@
 File that contains the networking functions
 """
 
-import sys
-sys.path.append("src/model/proto/")
 from model.proto.schema_pb2_grpc import NetworkServicer
 from model.proto.schema_pb2 import *
 from model.blockchain import TalkingStick
 from threading import get_ident
-
-# TO DO: 
-# - SEPERATE
 
 class Network(NetworkServicer):
     # the arguments should all be wrapper classes w/ locks
@@ -20,7 +15,7 @@ class Network(NetworkServicer):
     # make this take the callback
     def announce_block(self, request: AnnounceBlockRequest, context) -> AnnounceBlockReply:
         """Adds announced block to the chain if it is valid."""
-        print("announce block debug "+str(get_ident()))
+        print("checking if network block is valid\n")
         new_block = request.block
         latest_hash = self.model.blockchain.blocks[-1].curr_hash
         # verify that the latest block is correct

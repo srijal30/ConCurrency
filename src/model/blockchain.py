@@ -90,7 +90,7 @@ class TalkingStick():
     
     def calculate_difficulty(self) -> int:
         """Calculates the difficulty for the next block."""
-        return 5
+        return 6
     
     
     def calculate_reward(self)-> int:
