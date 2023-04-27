@@ -6,6 +6,13 @@ from model.proto.schema_pb2_grpc import NetworkServicer
 from model.proto.schema_pb2 import *
 from model.blockchain import TalkingStick
 from threading import get_ident
+import socket
+
+#((TESTINGGGG)) Checks if port is in use, otherwise, single node network will try to send a request to an inactive port
+# probably want to get rid of this later, since we are going to be using a central server (rendzevous???)
+def is_port_in_use(port: int) -> bool:
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+        return s.connect_ex(('localhost', port)) == 0
 
 class Network(NetworkServicer):
     # the arguments should all be wrapper classes w/ locks
@@ -63,3 +70,4 @@ class Network(NetworkServicer):
                         transaction=tran
                     )
         raise KeyError
+

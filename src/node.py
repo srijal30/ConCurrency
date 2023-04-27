@@ -12,12 +12,11 @@ sys.path.append("src/model/proto/")
 import grpc
 import concurrent.futures as futures
 from threading import get_ident
-
 from model.crypto import *
 from model.blockchain import TalkingStick
 from model.proto.schema_pb2 import *
 from model.proto.schema_pb2_grpc import add_NetworkServicer_to_server, NetworkStub
-
+from model.loader import store_blockchain
 from networking import *
 from mining import MiningService
 
@@ -28,6 +27,8 @@ class MiningNode():
     # the server_port and client_port is temprorary means to an end
     def __init__(self, pub_key: str, server_port:int, client_port:int):
         self.miner_pub_key: str = pub_key
+        self.client_port: int = client_port
+        self.server_port: int = server_port
 
         # give an option to load all the data later (for now create new chain)
         self.model: TalkingStick = TalkingStick()
@@ -65,6 +66,10 @@ class MiningNode():
         pass
 
     def callback(self, cb_block: Block) -> None:
+            """callback for the mining node"""
             print(cb_block, "\n")
-            request = AnnounceBlockRequest(block= cb_block)
-            self.client.announce_block(request)
+            store_blockchain(self.model.blockchain, "blockchain.data")
+            
+            if is_port_in_use(self.client_port):
+                request = AnnounceBlockRequest(block= cb_block)
+                self.client.announce_block(request)
