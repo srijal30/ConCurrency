@@ -16,7 +16,7 @@ from model.crypto import *
 from model.blockchain import TalkingStick
 from model.proto.schema_pb2 import *
 from model.proto.schema_pb2_grpc import add_NetworkServicer_to_server, NetworkStub
-from model.loader import store_blockchain
+from model.loader import store_blockchain, store_block
 from networking import *
 from mining import MiningService
 
