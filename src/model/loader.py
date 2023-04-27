@@ -16,3 +16,8 @@ def load_blockchain(path: str) -> BlockChain:
     except:
         print("Empty Blockchain")
         return BlockChain()
+
+def store_block(block: Block, path: str) -> None:
+    """stores block to file"""
+    with open(path, 'ab') as file:
+        file.append(block.SerializeToString())
