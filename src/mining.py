@@ -55,4 +55,4 @@ class MiningService():
                 return  # make stop mining more explicit
             block.nonce += 1
             block.curr_hash = hash_block(block)
-        callback(block)
+        callback(block, True)

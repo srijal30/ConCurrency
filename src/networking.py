@@ -2,11 +2,12 @@
 File that contains the networking functions
 """
 
+import socket
+from typing import Callable
+
 from model.proto.schema_pb2_grpc import NetworkServicer
 from model.proto.schema_pb2 import *
 from model.blockchain import TalkingStick
-from threading import get_ident
-import socket
 from model.loader import store_blockchain
 
 #((TESTINGGGG)) Checks if port is in use, otherwise, single node network will try to send a request to an inactive port
@@ -18,21 +19,17 @@ def is_port_in_use(port: int) -> bool:
 
 class Network(NetworkServicer):
     # the arguments should all be wrapper classes w/ locks
-    def __init__(self, stick: TalkingStick) -> None:
+    def __init__(self, stick: TalkingStick, callback: Callable) -> None:
         self.model: TalkingStick = stick
+        self.callback = callback
 
     # make this take the callback
     def announce_block(self, request: AnnounceBlockRequest, context) -> AnnounceBlockReply:
         """Adds announced block to the chain if it is valid."""
-        print("someone elsed finished mining first")
-        print(request.block)
         new_block = request.block
         latest_hash = self.model.blockchain.blocks[-1].curr_hash
         # verify that the latest block is correct
         if new_block.prev_hash == latest_hash and self.model.validate_block(new_block):
-            # add the block
-            print("the network block was valid\n")
-            self.model.add_block(new_block)
             # tie loose ends with uncommited snapshot and transaction pool
             # THIS NEEDS REVIEW (maybe move this functionality to datamodel)
             for tran in new_block.trans:
@@ -40,7 +37,7 @@ class Network(NetworkServicer):
                     self.model.pool_remove(tran.hash)
                 else:
                     self.model.replay_uncommitted(tran)
-            store_blockchain(self.model.blockchain, 'blockchain.data') 
+            self.callback(new_block, False)
         return AnnounceBlockReply()
 
 

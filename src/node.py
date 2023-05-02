@@ -15,7 +15,7 @@ from model.crypto import *
 from model.blockchain import TalkingStick
 from model.proto.schema_pb2 import *
 from model.proto.schema_pb2_grpc import add_NetworkServicer_to_server, NetworkStub
-from model.loader import store_blockchain, store_block
+from model.loader import store_blockchain
 from networking import *
 from mining import MiningService
 
@@ -30,7 +30,6 @@ class MiningNode():
 
         # give an option to load all the data later (for now create new chain)
         self.model: TalkingStick = TalkingStick()
-        # genesis block
         genesis = Block(
                 curr_hash="1"*64,
                 prev_hash="0"*64,
@@ -43,7 +42,7 @@ class MiningNode():
 
         # server setup
         self.server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
-        service = Network(self.model)
+        service = Network(self.model, self.new_block_callback)
         add_NetworkServicer_to_server(service, self.server)
         self.server.add_insecure_port('localhost:'+str(server_port))
         
@@ -53,20 +52,22 @@ class MiningNode():
 
     def start(self) -> None:
         """Starts the mining node."""
-        # start server
         self.server.start()
-        # start mining
-        self.miner.start(self.callback)
-        # server.wait_for_termination() # we dont need this?
+        self.miner.start(self.new_block_callback)
 
     def stop(self) -> None:
         """Stop the mining node."""
         pass
 
-    def callback(self, cb_block: Block) -> None:
-            """callback for the mining node"""
-            self.model.add_block(cb_block)
-            store_blockchain(self.model.blockchain, 'blockchain.data')
-            if is_port_in_use(self.client_port):
+    # for now it takes an extra argument, but later we can just forward block in both cases
+    def new_block_callback(self, cb_block: Block, self_mined: bool) -> None:
+            """Callback for when a new block needs to be added to the chain."""
+            # logging
+            print(("MINED" if self_mined else "RECEIVED") + " A NEW BLOCK\n", cb_block, "\n", sep="")
+            # add the block
+            if self.model.add_block(cb_block):
+                store_blockchain(self.model.blockchain, 'blockchain.data')
+            # this is where the block forwarding will go
+            if is_port_in_use(self.client_port) and self_mined:
                 request = AnnounceBlockRequest(block= cb_block)
                 self.client.announce_block(request)
