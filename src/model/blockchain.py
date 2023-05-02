@@ -6,16 +6,31 @@ from typing import Dict, List
 from model.proto.schema_pb2 import Transaction, Block, BlockChain, Snapshot
 from model.crypto import hash_block, hash_transaction, validate_signature, load_public_key
 from model.proto.schema_pb2 import *
+from model.loader import load_blockchain, load_snapshot
 from threading import Lock
 
+# UPDATE THE READ FROM FILE TO MAKE IT MORE DYNAMIC
 class TalkingStick():
-    # should automatically make a genesis block if it is empty
-    def __init__(self):
+    def __init__(self, create_new: bool):
         self.blockchain = BlockChain()
         self.trans_pool: Dict[str, Transaction] = [] 
         self.uncommitted_snapshot = Snapshot()
         self.committed_snapshot = Snapshot()
         self._lock = Lock()
+
+        if create_new:
+            print("CREATING NEW BLOCKCHAIN\n")
+            genesis = Block(
+                curr_hash="1"*64,
+                prev_hash="0"*64,
+                miner_pub_key="Satoshi Nakamoto"  
+            )
+            self.blockchain.blocks.append(genesis)
+        else:
+            print("LOADING EXISTING BLOCKCHAIN\n")
+            self.blockchain = load_blockchain("blockchain.data")
+            self.committed_snapshot = load_snapshot("committed_snapshot.data") 
+
 
     ### BLOCK
     def validate_block(self, block:Block, snap : Snapshot = None) -> bool:
@@ -37,7 +52,6 @@ class TalkingStick():
                 if not self._validate_snapshot(snap, tran, added_transactions):
                     return False
         return True
-    
 
     ### TRANSACTION
     def validate_snapshot(self, snap : Snapshot, tran: Transaction, trans_list : List[Transaction]) -> bool:
@@ -60,7 +74,6 @@ class TalkingStick():
             return False
         return True
     
-    
     ### BLOCKCHAIN
     def validate_chain(self) -> bool:
         # loop through blockchain array and validate each block
@@ -75,32 +88,29 @@ class TalkingStick():
                 return False
             prev_hash = block.curr_hash
         return True
-        
     
     def add_block(self, block:Block) -> bool:
         """Adds block to the blockchain if valid. Returns whether operation was success. Also updates the committed snapshot."""    
         # Check block validity
         if not self.validate_block(block):
            return False
-        # Update the blockchain with new block
         self._lock.acquire()
+        # Reward the miner
+        self.committed_snapshot.accounts[block.miner_pub_key].balance += block.reward
+        # Update the blockchain with new block
         self.blockchain.blocks.append(block)
         self._lock.release()
         return True
-    
     
     def calculate_difficulty(self) -> int:
         """Calculates the difficulty for the next block."""
         return 5
     
-    
     def calculate_reward(self)-> int:
         """Calculates the mining reward for the next block"""
         return 100
     
-
     ### SNAPSHOT
-
     def _validate_snapshot(self, snap : Snapshot, tran: Transaction, trans_list : List[Transaction]) -> bool:
         """Returns False if the transaction is invalid, true otherwise"""
         if not self.validate_transaction(tran) or not self.replay_committed(tran):
@@ -139,7 +149,6 @@ class TalkingStick():
         else:
             return False
     
- 
     def undo_transaction(self, snapshot: Snapshot, tran: Transaction) -> None:
         """Undoes the effects of a transaction on snapshot"""
         self._lock.acquire()
@@ -148,7 +157,6 @@ class TalkingStick():
         snapshot.accounts[tran.sender_pub_key].balance += tran.amount
         self._lock.release()
     
-
     ### MINING POOL
     def pool_add(self, tran : Transaction) -> None:
         """Adds transaction to mining pool"""
@@ -157,12 +165,10 @@ class TalkingStick():
         self._lock.release()
         return
     
-    
     def pool_has(self, hash : str):
         self._lock.acquire()
         self._lock.release()
         return hash in self.trans_pool
-    
     
     def pool_remove(self, hash : str) -> None:
         self._lock.acquire()

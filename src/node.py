@@ -1,23 +1,21 @@
 """
 File that contains the interface for the Node (miner).
-
-Should combine these modules together
-- mining.py
-- networking.py
 """
 
 import sys
 sys.path.append("src/model/proto/")
 
 import grpc
+from mining import MiningService
 import concurrent.futures as futures
+
+import os
+from networking import *
 from model.crypto import *
 from model.blockchain import TalkingStick
 from model.proto.schema_pb2 import *
 from model.proto.schema_pb2_grpc import add_NetworkServicer_to_server, NetworkStub
-from model.loader import store_blockchain
-from networking import *
-from mining import MiningService
+from model.loader import store_blockchain, store_snapshot
 
 # TO DO: add a way to choose whether to start or join the network and load old data from file
 class MiningNode():
@@ -28,14 +26,10 @@ class MiningNode():
         self.client_port: int = client_port
         self.server_port: int = server_port
 
-        # give an option to load all the data later (for now create new chain)
-        self.model: TalkingStick = TalkingStick()
-        genesis = Block(
-                curr_hash="1"*64,
-                prev_hash="0"*64,
-                miner_pub_key="Satoshi Nakamoto"  
-        )
-        self.model.blockchain.blocks.append(genesis)
+        create_new = True
+        if os.path.exists("blockchain.data") and os.path.exists("committed_snapshot.data"):
+             create_new = False
+        self.model: TalkingStick = TalkingStick(create_new=create_new)
         
         # setup miner
         self.miner = MiningService(self.miner_pub_key, self.model)
@@ -50,14 +44,17 @@ class MiningNode():
         channel = grpc.insecure_channel('localhost:'+str(client_port))
         self.client = NetworkStub(channel)
 
+
     def start(self) -> None:
         """Starts the mining node."""
         self.server.start()
         self.miner.start(self.new_block_callback)
 
+
     def stop(self) -> None:
         """Stop the mining node."""
         pass
+
 
     # for now it takes an extra argument, but later we can just forward block in both cases
     def new_block_callback(self, cb_block: Block, self_mined: bool) -> None:
@@ -67,6 +64,7 @@ class MiningNode():
             # add the block
             if self.model.add_block(cb_block):
                 store_blockchain(self.model.blockchain, 'blockchain.data')
+                store_snapshot(self.model.committed_snapshot, "committed_snapshot.data")
             # this is where the block forwarding will go
             if is_port_in_use(self.client_port) and self_mined:
                 request = AnnounceBlockRequest(block= cb_block)
