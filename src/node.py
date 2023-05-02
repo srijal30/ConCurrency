@@ -45,7 +45,7 @@ class MiningNode():
         self.client = NetworkStub(channel)
 
         # reconcile the node with the network
-        self.reconcile()
+        # self.reconcile()
 
     def start(self) -> None:
         """Starts the mining node."""
@@ -76,13 +76,15 @@ class MiningNode():
     def reconcile(self):
         """Gets the current node up to speed with the rest of the network."""
         our_len = len(self.model.blockchain.blocks)
-        net_len = self.client.get_chain_length(GetChainLengthRequest())
+        net_len = self.client.get_chain_length(GetChainLengthRequest()).length
         if our_len < net_len:
             print("DETECTED OLD VERSION OF CHAIN...\n")
             updated_chain: GetChainReply = self.client.get_chain(GetChainRequest())
-            while our_len != net_len:
-                new_block = self.client.get_block(GetBlockRequest(hash=updated_chain.hashes[our_len]))
-                self.model.add_block(new_block)
+            while our_len != net_len:  # this doesnt work if the chains diverge
+                new_block: GetBlockReply = self.client.get_block(GetBlockRequest(hash=updated_chain.hashes[our_len]))
+                self.model.add_block(new_block.block)
                 our_len += 1
+            store_blockchain(self.model.blockchain, 'blockchain.data')
+            store_snapshot(self.model.committed_snapshot, "committed_snapshot.data")
             print("DONE UPDATING BLOCKCHAIN!")
 
