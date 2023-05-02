@@ -69,7 +69,7 @@ class MiningNode():
             """callback for the mining node"""
             print(cb_block, "\n")
             self.model.add_block(cb_block)
-            store_blockchain(self.model.blockchain, 'blockchain.data')
+            store_block(cb_block, 'blockchain.data')
             if is_port_in_use(self.client_port):
                 request = AnnounceBlockRequest(block= cb_block)
                 self.client.announce_block(request)
