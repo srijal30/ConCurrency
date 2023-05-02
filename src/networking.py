@@ -7,6 +7,7 @@ from model.proto.schema_pb2 import *
 from model.blockchain import TalkingStick
 from threading import get_ident
 import socket
+from model.loader import store_blockchain
 
 #((TESTINGGGG)) Checks if port is in use, otherwise, single node network will try to send a request to an inactive port
 # probably want to get rid of this later, since we are going to be using a central server (rendzevous???)
@@ -39,6 +40,7 @@ class Network(NetworkServicer):
                     self.model.pool_remove(tran.hash)
                 else:
                     self.model.replay_uncommitted(tran)
+            store_blockchain(self.model.blockchain, 'blockchain.data') 
         return AnnounceBlockReply()
 
 
