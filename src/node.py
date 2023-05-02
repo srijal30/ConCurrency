@@ -11,7 +11,6 @@ sys.path.append("src/model/proto/")
 
 import grpc
 import concurrent.futures as futures
-from threading import get_ident
 from model.crypto import *
 from model.blockchain import TalkingStick
 from model.proto.schema_pb2 import *
@@ -23,7 +22,6 @@ from mining import MiningService
 # TO DO: add a way to choose whether to start or join the network and load old data from file
 class MiningNode():
     """Implementation of a mining node"""
-    
     # the server_port and client_port is temprorary means to an end
     def __init__(self, pub_key: str, server_port:int, client_port:int):
         self.miner_pub_key: str = pub_key
@@ -32,7 +30,7 @@ class MiningNode():
 
         # give an option to load all the data later (for now create new chain)
         self.model: TalkingStick = TalkingStick()
-        # genesis test
+        # genesis block
         genesis = Block(
                 curr_hash="1"*64,
                 prev_hash="0"*64,
@@ -49,7 +47,7 @@ class MiningNode():
         add_NetworkServicer_to_server(service, self.server)
         self.server.add_insecure_port('localhost:'+str(server_port))
         
-        # client setup
+        # client(s) setup
         channel = grpc.insecure_channel('localhost:'+str(client_port))
         self.client = NetworkStub(channel)
 
@@ -58,7 +56,7 @@ class MiningNode():
         # start server
         self.server.start()
         # start mining
-        self.miner.mine_next_block(self.callback)
+        self.miner.start_mining(self.callback)
         # server.wait_for_termination() # we dont need this?
 
     def stop(self) -> None:

@@ -22,13 +22,25 @@ class MiningService():
         self.model = stick
         self.current_thread: Thread = None        
 
-    def mine_next_block(self, callback: Callable):
+
+    # why are the 2 following not the same?
+    def start_mining(self, callback: Callable):
+        """Iterative approach to mining the next block"""
+        # setup next block
         new_block = self.prepare_next_block()
-        print("new block prepared\n")
-        self._mine(new_block, callback)
-        self.mine_next_block(callback)
+        while True:
+            self._mine(new_block, callback)
+            new_block = self.prepare_next_block()
+
+    # def mine_next_block(self, callback: Callable):
+    #     """Recursive approach to mining blocks."""
+    #     new_block = self.prepare_next_block()
+    #     print("new block prepared\n")
+    #     self._mine(new_block, callback)
+    #     self.mine_next_block(callback)
 
     def prepare_next_block(self) -> Block:
+        """Prepares next block based on the current state of the data model."""
         # setup the new block
         new_block = Block(
             prev_hash=self.model.blockchain.blocks[-1].curr_hash, 
@@ -36,7 +48,7 @@ class MiningService():
             difficulty=self.model.calculate_difficulty(),
             reward=self.model.calculate_reward(),
         )
-        # add the transactions
+        # add the transactions (needs modification)
         MAX_TRANSACTIONS = 10
         ctr = 0
         for hash, tran in self.model.trans_pool:

@@ -9,6 +9,7 @@ from model.proto.schema_pb2 import *
 from threading import Lock
 
 class TalkingStick():
+    # should automatically make a genesis block if it is empty
     def __init__(self):
         self.blockchain = BlockChain()
         self.trans_pool: Dict[str, Transaction] = [] 
