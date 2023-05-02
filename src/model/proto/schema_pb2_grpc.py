@@ -2,7 +2,7 @@
 """Client and server classes corresponding to protobuf-defined services."""
 import grpc
 
-import schema_pb2 as schema__pb2
+import model.proto.schema_pb2 as schema__pb2
 
 
 class NetworkStub(object):

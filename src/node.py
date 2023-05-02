@@ -44,6 +44,8 @@ class MiningNode():
         channel = grpc.insecure_channel('localhost:'+str(client_port))
         self.client = NetworkStub(channel)
 
+        # reconcile the node with the network
+        self.reconcile()
 
     def start(self) -> None:
         """Starts the mining node."""
@@ -58,14 +60,29 @@ class MiningNode():
 
     # for now it takes an extra argument, but later we can just forward block in both cases
     def new_block_callback(self, cb_block: Block, self_mined: bool) -> None:
-            """Callback for when a new block needs to be added to the chain."""
-            # logging
-            print(("MINED" if self_mined else "RECEIVED") + " A NEW BLOCK\n", cb_block, "\n", sep="")
-            # add the block
-            if self.model.add_block(cb_block):
-                store_blockchain(self.model.blockchain, 'blockchain.data')
-                store_snapshot(self.model.committed_snapshot, "committed_snapshot.data")
-            # this is where the block forwarding will go
-            if is_port_in_use(self.client_port) and self_mined:
-                request = AnnounceBlockRequest(block= cb_block)
-                self.client.announce_block(request)
+        """Callback for when a new block needs to be added to the chain."""
+        # logging
+        print(("MINED" if self_mined else "RECEIVED") + " A NEW BLOCK\n", cb_block, "\n", sep="")
+        # add the block
+        if self.model.add_block(cb_block):
+            store_blockchain(self.model.blockchain, 'blockchain.data')
+            store_snapshot(self.model.committed_snapshot, "committed_snapshot.data")
+        # this is where the block forwarding will go
+        if is_port_in_use(self.client_port) and self_mined:
+            request = AnnounceBlockRequest(block= cb_block)
+            self.client.announce_block(request)
+
+    # NOTE: has to be updated we implement multiple clients
+    def reconcile(self):
+        """Gets the current node up to speed with the rest of the network."""
+        our_len = len(self.model.blockchain.blocks)
+        net_len = self.client.get_chain_length(GetChainLengthRequest())
+        if our_len < net_len:
+            print("DETECTED OLD VERSION OF CHAIN...\n")
+            updated_chain: GetChainReply = self.client.get_chain(GetChainRequest())
+            while our_len != net_len:
+                new_block = self.client.get_block(GetBlockRequest(hash=updated_chain.hashes[our_len]))
+                self.model.add_block(new_block)
+                our_len += 1
+            print("DONE UPDATING BLOCKCHAIN!")
+
