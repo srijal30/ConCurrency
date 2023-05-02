@@ -49,20 +49,22 @@ service Network{
   rpc announce_block(AnnounceBlockRequest) returns (AnnounceBlockReply) {};
   
   //send transaction from client to server
-  rpc send_transaction(SendTransactionRequest) returns (SendTransactionReply) {};
+  rpc announce_transaction(AnnounceTransactionRequest) returns (AnnounceTransactionReply) {};
 
   /// CLIENT RECEIVES
   //receive block from server to client
   rpc get_block(GetBlockRequest) returns (GetBlockReply) {};
 
   //receive transaction from server to client
-  rpc request_transaction(RequestTransactionRequest) returns (RequestTransactionReply) {};
+  rpc get_transaction(GetTransactionRequest) returns (GetTransactionReply) {};
   
   //receive length of chain from other servers
-  rpc request_chain_length(RequestChainLength) returns (RequestChainLengthReply) {};
+  rpc get_chain_length(GetChainLengthRequest) returns (GetChainLengthReply) {};
 
   //receive missing blocks??
-  //receive all block hashes??
+  //receive all block hashes in the blockchain... in the future allow a partition
+  rpc get_chain(GetChainRequest) returns (GetChainReply) {};
+  
   
   /*
   TO DO:
@@ -77,11 +79,11 @@ message AnnounceBlockRequest{
 message AnnounceBlockReply{
 }
 
-message SendTransactionRequest{
+message AnnounceTransactionRequest{
   Transaction transaction = 1;
 }
 
-message SendTransactionReply{
+message AnnounceTransactionReply{
 }
 
 // QUESTION: how should the block be requested?
@@ -93,11 +95,26 @@ message GetBlockReply{
   Block block = 1;
 }
 
-message RequestTransactionRequest{
+message GetTransactionRequest{
   string hash = 1; //this might get updated to uuid in the future
 }
 
-message RequestTransactionReply{
+message GetTransactionReply{
   Transaction transaction = 1;
 }
 
+message GetChainLengthRequest{
+
+}
+
+message GetChainLengthReply{
+  uint64 length = 1;
+}
+
+message GetChainRequest{
+
+}
+
+message GetChainReply{
+  repeated string hashes = 1;
+}

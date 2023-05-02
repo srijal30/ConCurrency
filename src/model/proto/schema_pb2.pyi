@@ -23,6 +23,16 @@ class AnnounceBlockRequest(_message.Message):
     block: Block
     def __init__(self, block: _Optional[_Union[Block, _Mapping]] = ...) -> None: ...
 
+class AnnounceTransactionReply(_message.Message):
+    __slots__ = []
+    def __init__(self) -> None: ...
+
+class AnnounceTransactionRequest(_message.Message):
+    __slots__ = ["transaction"]
+    TRANSACTION_FIELD_NUMBER: _ClassVar[int]
+    transaction: Transaction
+    def __init__(self, transaction: _Optional[_Union[Transaction, _Mapping]] = ...) -> None: ...
+
 class Block(_message.Message):
     __slots__ = ["curr_hash", "difficulty", "merkle_root", "miner_pub_key", "nonce", "prev_hash", "reward", "timestamp", "trans"]
     CURR_HASH_FIELD_NUMBER: _ClassVar[int]
@@ -63,27 +73,37 @@ class GetBlockRequest(_message.Message):
     hash: str
     def __init__(self, hash: _Optional[str] = ...) -> None: ...
 
-class RequestTransactionReply(_message.Message):
+class GetChainLengthReply(_message.Message):
+    __slots__ = ["length"]
+    LENGTH_FIELD_NUMBER: _ClassVar[int]
+    length: int
+    def __init__(self, length: _Optional[int] = ...) -> None: ...
+
+class GetChainLengthRequest(_message.Message):
+    __slots__ = []
+    def __init__(self) -> None: ...
+
+class GetChainReply(_message.Message):
+    __slots__ = ["hashes"]
+    HASHES_FIELD_NUMBER: _ClassVar[int]
+    hashes: _containers.RepeatedScalarFieldContainer[str]
+    def __init__(self, hashes: _Optional[_Iterable[str]] = ...) -> None: ...
+
+class GetChainRequest(_message.Message):
+    __slots__ = []
+    def __init__(self) -> None: ...
+
+class GetTransactionReply(_message.Message):
     __slots__ = ["transaction"]
     TRANSACTION_FIELD_NUMBER: _ClassVar[int]
     transaction: Transaction
     def __init__(self, transaction: _Optional[_Union[Transaction, _Mapping]] = ...) -> None: ...
 
-class RequestTransactionRequest(_message.Message):
+class GetTransactionRequest(_message.Message):
     __slots__ = ["hash"]
     HASH_FIELD_NUMBER: _ClassVar[int]
     hash: str
     def __init__(self, hash: _Optional[str] = ...) -> None: ...
-
-class SendTransactionReply(_message.Message):
-    __slots__ = []
-    def __init__(self) -> None: ...
-
-class SendTransactionRequest(_message.Message):
-    __slots__ = ["transaction"]
-    TRANSACTION_FIELD_NUMBER: _ClassVar[int]
-    transaction: Transaction
-    def __init__(self, transaction: _Optional[_Union[Transaction, _Mapping]] = ...) -> None: ...
 
 class Snapshot(_message.Message):
     __slots__ = ["accounts"]

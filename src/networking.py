@@ -41,12 +41,12 @@ class Network(NetworkServicer):
         return AnnounceBlockReply()
 
 
-    def send_transaction(self, request: SendTransactionRequest, context) -> SendTransactionReply:
+    def announce_transaction(self, request: AnnounceTransactionRequest, context) -> AnnounceTransactionReply:
         """Adds transaction to transaction pool if it is valid. Also updates uncommited snapshot."""
         new_tran = request.transaction
         if self.model.validate_transaction(new_tran) and self.model.replay_uncommitted(new_tran):
             self.model.pool_add(new_tran)
-        return SendTransactionReply()    
+        return AnnounceTransactionReply()    
 
 
     # inefficient
@@ -61,13 +61,26 @@ class Network(NetworkServicer):
     
 
     # inefficient
-    def request_transaction(self, request: RequestTransactionRequest, context) -> RequestTransactionReply:
+    def get_transaction(self, request: GetTransactionRequest, context) -> GetTransactionReply:
         """Returns transaction with requested hash if found. Else returns KeyError"""
         for block in self.model.blockchain.blocks:
             for tran in block.trans:
                 if tran.hash == request.hash:
-                    return RequestTransactionReply(
+                    return GetTransactionReply(
                         transaction=tran
                     )
         raise KeyError
 
+    
+    # should we send length based on bytes of the file instead?
+    def get_chain_length(self, request: GetChainLengthRequest, context) -> GetChainLengthReply:
+        """Returns the length of the current node's blockchain."""
+        return GetChainLengthReply(
+            length=len(self.model.blockchain.blocks)
+        )
+    
+
+    def get_chain(self, request: GetChainRequest, context) -> GetChainReply:
+        return GetChainReply(
+            hashes=[block.curr_hash for block in self.model.blockchain.blocks]
+        )

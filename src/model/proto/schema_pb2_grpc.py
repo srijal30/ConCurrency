@@ -2,7 +2,7 @@
 """Client and server classes corresponding to protobuf-defined services."""
 import grpc
 
-from . import schema_pb2 as schema__pb2
+import schema_pb2 as schema__pb2
 
 
 class NetworkStub(object):
@@ -19,20 +19,30 @@ class NetworkStub(object):
                 request_serializer=schema__pb2.AnnounceBlockRequest.SerializeToString,
                 response_deserializer=schema__pb2.AnnounceBlockReply.FromString,
                 )
-        self.send_transaction = channel.unary_unary(
-                '/messages.Network/send_transaction',
-                request_serializer=schema__pb2.SendTransactionRequest.SerializeToString,
-                response_deserializer=schema__pb2.SendTransactionReply.FromString,
+        self.announce_transaction = channel.unary_unary(
+                '/messages.Network/announce_transaction',
+                request_serializer=schema__pb2.AnnounceTransactionRequest.SerializeToString,
+                response_deserializer=schema__pb2.AnnounceTransactionReply.FromString,
                 )
         self.get_block = channel.unary_unary(
                 '/messages.Network/get_block',
                 request_serializer=schema__pb2.GetBlockRequest.SerializeToString,
                 response_deserializer=schema__pb2.GetBlockReply.FromString,
                 )
-        self.request_transaction = channel.unary_unary(
-                '/messages.Network/request_transaction',
-                request_serializer=schema__pb2.RequestTransactionRequest.SerializeToString,
-                response_deserializer=schema__pb2.RequestTransactionReply.FromString,
+        self.get_transaction = channel.unary_unary(
+                '/messages.Network/get_transaction',
+                request_serializer=schema__pb2.GetTransactionRequest.SerializeToString,
+                response_deserializer=schema__pb2.GetTransactionReply.FromString,
+                )
+        self.get_chain_length = channel.unary_unary(
+                '/messages.Network/get_chain_length',
+                request_serializer=schema__pb2.GetChainLengthRequest.SerializeToString,
+                response_deserializer=schema__pb2.GetChainLengthReply.FromString,
+                )
+        self.get_chain = channel.unary_unary(
+                '/messages.Network/get_chain',
+                request_serializer=schema__pb2.GetChainRequest.SerializeToString,
+                response_deserializer=schema__pb2.GetChainReply.FromString,
                 )
 
 
@@ -47,7 +57,7 @@ class NetworkServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
-    def send_transaction(self, request, context):
+    def announce_transaction(self, request, context):
         """send transaction from client to server
         """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
@@ -62,8 +72,23 @@ class NetworkServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
-    def request_transaction(self, request, context):
+    def get_transaction(self, request, context):
         """receive transaction from server to client
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def get_chain_length(self, request, context):
+        """receive length of chain from other servers
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def get_chain(self, request, context):
+        """receive missing blocks??
+        receive all block hashes in the blockchain... in the future allow a partition
         """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
@@ -77,20 +102,30 @@ def add_NetworkServicer_to_server(servicer, server):
                     request_deserializer=schema__pb2.AnnounceBlockRequest.FromString,
                     response_serializer=schema__pb2.AnnounceBlockReply.SerializeToString,
             ),
-            'send_transaction': grpc.unary_unary_rpc_method_handler(
-                    servicer.send_transaction,
-                    request_deserializer=schema__pb2.SendTransactionRequest.FromString,
-                    response_serializer=schema__pb2.SendTransactionReply.SerializeToString,
+            'announce_transaction': grpc.unary_unary_rpc_method_handler(
+                    servicer.announce_transaction,
+                    request_deserializer=schema__pb2.AnnounceTransactionRequest.FromString,
+                    response_serializer=schema__pb2.AnnounceTransactionReply.SerializeToString,
             ),
             'get_block': grpc.unary_unary_rpc_method_handler(
                     servicer.get_block,
                     request_deserializer=schema__pb2.GetBlockRequest.FromString,
                     response_serializer=schema__pb2.GetBlockReply.SerializeToString,
             ),
-            'request_transaction': grpc.unary_unary_rpc_method_handler(
-                    servicer.request_transaction,
-                    request_deserializer=schema__pb2.RequestTransactionRequest.FromString,
-                    response_serializer=schema__pb2.RequestTransactionReply.SerializeToString,
+            'get_transaction': grpc.unary_unary_rpc_method_handler(
+                    servicer.get_transaction,
+                    request_deserializer=schema__pb2.GetTransactionRequest.FromString,
+                    response_serializer=schema__pb2.GetTransactionReply.SerializeToString,
+            ),
+            'get_chain_length': grpc.unary_unary_rpc_method_handler(
+                    servicer.get_chain_length,
+                    request_deserializer=schema__pb2.GetChainLengthRequest.FromString,
+                    response_serializer=schema__pb2.GetChainLengthReply.SerializeToString,
+            ),
+            'get_chain': grpc.unary_unary_rpc_method_handler(
+                    servicer.get_chain,
+                    request_deserializer=schema__pb2.GetChainRequest.FromString,
+                    response_serializer=schema__pb2.GetChainReply.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -120,7 +155,7 @@ class Network(object):
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
     @staticmethod
-    def send_transaction(request,
+    def announce_transaction(request,
             target,
             options=(),
             channel_credentials=None,
@@ -130,9 +165,9 @@ class Network(object):
             wait_for_ready=None,
             timeout=None,
             metadata=None):
-        return grpc.experimental.unary_unary(request, target, '/messages.Network/send_transaction',
-            schema__pb2.SendTransactionRequest.SerializeToString,
-            schema__pb2.SendTransactionReply.FromString,
+        return grpc.experimental.unary_unary(request, target, '/messages.Network/announce_transaction',
+            schema__pb2.AnnounceTransactionRequest.SerializeToString,
+            schema__pb2.AnnounceTransactionReply.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
@@ -154,7 +189,7 @@ class Network(object):
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
     @staticmethod
-    def request_transaction(request,
+    def get_transaction(request,
             target,
             options=(),
             channel_credentials=None,
@@ -164,8 +199,42 @@ class Network(object):
             wait_for_ready=None,
             timeout=None,
             metadata=None):
-        return grpc.experimental.unary_unary(request, target, '/messages.Network/request_transaction',
-            schema__pb2.RequestTransactionRequest.SerializeToString,
-            schema__pb2.RequestTransactionReply.FromString,
+        return grpc.experimental.unary_unary(request, target, '/messages.Network/get_transaction',
+            schema__pb2.GetTransactionRequest.SerializeToString,
+            schema__pb2.GetTransactionReply.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
+    def get_chain_length(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/messages.Network/get_chain_length',
+            schema__pb2.GetChainLengthRequest.SerializeToString,
+            schema__pb2.GetChainLengthReply.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
+    def get_chain(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/messages.Network/get_chain',
+            schema__pb2.GetChainRequest.SerializeToString,
+            schema__pb2.GetChainReply.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
