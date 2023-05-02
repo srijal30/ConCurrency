@@ -2,17 +2,14 @@
 File that contains the mining service code.
 
 TO DO:
-- make this independent from all other code (except data model)
 - MAX_TRANSACTIONS constnat should be moved somewhere else
 """
 
 from typing import Callable
+
 from model.proto.schema_pb2 import *
 from model.crypto import *
 from model.blockchain import TalkingStick
-
-
-from threading import Thread
 
 # add a way for it to stop
 class MiningService():
@@ -20,24 +17,13 @@ class MiningService():
     def __init__(self, pub_key: str, stick: TalkingStick):
         self.miner_pub_key = pub_key
         self.model = stick
-        self.current_thread: Thread = None        
 
-
-    # why are the 2 following not the same?
-    def start_mining(self, callback: Callable):
+    def start(self, callback: Callable):
         """Iterative approach to mining the next block"""
-        # setup next block
         new_block = self.prepare_next_block()
         while True:
-            self._mine(new_block, callback)
+            self.mine(new_block, callback)
             new_block = self.prepare_next_block()
-
-    # def mine_next_block(self, callback: Callable):
-    #     """Recursive approach to mining blocks."""
-    #     new_block = self.prepare_next_block()
-    #     print("new block prepared\n")
-    #     self._mine(new_block, callback)
-    #     self.mine_next_block(callback)
 
     def prepare_next_block(self) -> Block:
         """Prepares next block based on the current state of the data model."""
@@ -59,17 +45,14 @@ class MiningService():
         generate_merkle_root(new_block)
         return new_block
 
-    def _mine(self, block: Block, callback: Callable) -> None: 
-        """Mines blocks until signed hash is generated."""
-        print("starting mining\n")
+    def mine(self, block: Block, callback: Callable) -> None: 
+        """Mines blocks until valid signed hash is generated."""
         block.nonce = 0
         block.curr_hash = hash_block(block)
         while block.curr_hash[0:block.difficulty] != "0"*block.difficulty:
             # stops mining if the prev_hash is no longer valid 
             if not self.model.blockchain.blocks[-1].curr_hash == block.prev_hash:
-                print("new block is valid so stopping mining\n")
-                return
+                return  # make stop mining more explicit
             block.nonce += 1
             block.curr_hash = hash_block(block)
-        print("finished mining")
         callback(block)

@@ -56,7 +56,7 @@ class MiningNode():
         # start server
         self.server.start()
         # start mining
-        self.miner.start_mining(self.callback)
+        self.miner.start(self.callback)
         # server.wait_for_termination() # we dont need this?
 
     def stop(self) -> None:
@@ -64,10 +64,9 @@ class MiningNode():
         pass
 
     def callback(self, cb_block: Block) -> None:
-            """callback for the mining node"""
-            print(cb_block, "\n")
-            self.model.add_block(cb_block)
-            store_blockchain(self.model.blockchain, 'blockchain.data')
-            if is_port_in_use(self.client_port):
-                request = AnnounceBlockRequest(block= cb_block)
-                self.client.announce_block(request)
+        """callback for the mining node"""
+        self.model.add_block(cb_block)
+        store_blockchain(self.model.blockchain, 'blockchain.data')
+        if is_port_in_use(self.client_port):
+            request = AnnounceBlockRequest(block= cb_block)
+            self.client.announce_block(request)
