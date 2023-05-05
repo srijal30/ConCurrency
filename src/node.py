@@ -25,6 +25,7 @@ class MiningNode():
         self.miner_pub_key: str = pub_key
         self.client_port: int = client_port
         self.server_port: int = server_port
+        self.ip: str = ip
 
         create_new = True
         if os.path.exists("blockchain.data") and os.path.exists("committed_snapshot.data"):
