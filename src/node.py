@@ -68,7 +68,7 @@ class MiningNode():
             store_blockchain(self.model.blockchain, 'blockchain.data')
             store_snapshot(self.model.committed_snapshot, "committed_snapshot.data")
         # this is where the block forwarding will go
-        if is_port_in_use(self.client_port) and self_mined:
+        if is_port_in_use(self.ip, self.client_port) and self_mined:
             request = AnnounceBlockRequest(block= cb_block)
             self.client.announce_block(request)
 
