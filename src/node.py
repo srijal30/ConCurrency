@@ -21,7 +21,7 @@ from model.loader import store_blockchain, store_snapshot
 class MiningNode():
     """Implementation of a mining node"""
     # the server_port and client_port is temprorary means to an end
-    def __init__(self, pub_key: str, server_port:int, client_port:int):
+    def __init__(self, pub_key: str, ip:str, server_port:int, client_port:int):
         self.miner_pub_key: str = pub_key
         self.client_port: int = client_port
         self.server_port: int = server_port
@@ -38,10 +38,10 @@ class MiningNode():
         self.server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
         service = Network(self.model, self.new_block_callback)
         add_NetworkServicer_to_server(service, self.server)
-        self.server.add_insecure_port('localhost:'+str(server_port))
+        self.server.add_insecure_port(ip+':'+str(server_port))
         
         # client(s) setup
-        channel = grpc.insecure_channel('localhost:'+str(client_port))
+        channel = grpc.insecure_channel(ip+':'+str(client_port))
         self.client = NetworkStub(channel)
 
         # reconcile the node with the network
