@@ -1,6 +1,7 @@
 """
 File that contains the networking functions
 """
+rend_server : str = "http://172.16.0.2:5000/api/get_nodes"
 
 import socket
 from typing import Callable

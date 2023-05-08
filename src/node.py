@@ -16,15 +16,18 @@ from model.blockchain import TalkingStick
 from model.proto.schema_pb2 import *
 from model.proto.schema_pb2_grpc import add_NetworkServicer_to_server, NetworkStub
 from model.loader import store_blockchain, store_snapshot
+import requests
+import json
+from typing import List
 
+PORT : int = 50001
+REND_SERVER : int = "http://100.118.147.99:5000"
 # TO DO: add a way to choose whether to start or join the network and load old data from file
 class MiningNode():
     """Implementation of a mining node"""
     # the server_port and client_port is temprorary means to an end
-    def __init__(self, pub_key: str, server_port:int, client_port:int):
+    def __init__(self, pub_key: str):
         self.miner_pub_key: str = pub_key
-        self.client_port: int = client_port
-        self.server_port: int = server_port
 
         create_new = True
         if os.path.exists("blockchain.data") and os.path.exists("committed_snapshot.data"):
@@ -38,14 +41,11 @@ class MiningNode():
         self.server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
         service = Network(self.model, self.new_block_callback)
         add_NetworkServicer_to_server(service, self.server)
-        self.server.add_insecure_port('localhost:'+str(server_port))
-        
-        # client(s) setup
-        channel = grpc.insecure_channel('localhost:'+str(client_port))
-        self.client = NetworkStub(channel)
+        self.server.add_insecure_port('localhost:'+str(PORT))
+        requests.get(REND_SERVER + "/api/connect")
 
         # reconcile the node with the network
-        # self.reconcile()
+        self.reconcile()
 
     def start(self) -> None:
         """Starts the mining node."""
@@ -72,19 +72,25 @@ class MiningNode():
             request = AnnounceBlockRequest(block= cb_block)
             self.client.announce_block(request)
 
+
     # NOTE: has to be updated we implement multiple clients
     def reconcile(self):
         """Gets the current node up to speed with the rest of the network."""
         our_len = len(self.model.blockchain.blocks)
-        net_len = self.client.get_chain_length(GetChainLengthRequest()).length
-        if our_len < net_len:
-            print("DETECTED OLD VERSION OF CHAIN...\n")
-            updated_chain: GetChainReply = self.client.get_chain(GetChainRequest())
-            while our_len != net_len:  # this doesnt work if the chains diverge
-                new_block: GetBlockReply = self.client.get_block(GetBlockRequest(hash=updated_chain.hashes[our_len]))
-                self.model.add_block(new_block.block)
-                our_len += 1
-            store_blockchain(self.model.blockchain, 'blockchain.data')
-            store_snapshot(self.model.committed_snapshot, "committed_snapshot.data")
-            print("DONE UPDATING BLOCKCHAIN!")
+        ip_list : List[str] = json.loads(requests.get(REND_SERVER + "/api/get_nodes").text)
+        # longest : blockchain
 
+        # for x in ip_list:
+        #     if len(self.server.get_chain_length(GetChainLengthRequest(x+self.client_port)) > our_len):
+
+        #net_len = self.client.get_chain_length(GetChainLengthRequest()).length
+        # if our_len < net_len:
+        #     print("DETECTED OLD VERSION OF CHAIN...\n")
+        #     updated_chain: GetChainReply = self.client.get_chain(GetChainRequest())
+        #     while our_len != net_len:  # this doesnt work if the chains diverge
+        #         new_block: GetBlockReply = self.client.get_block(GetBlockRequest(hash=updated_chain.hashes[our_len]))
+        #         self.model.add_block(new_block.block)
+        #         our_len += 1
+        #     store_blockchain(self.model.blockchain, 'blockchain.data')
+        #     store_snapshot(self.model.committed_snapshot, "committed_snapshot.data")
+        #     print("DONE UPDATING BLOCKCHAIN!")
