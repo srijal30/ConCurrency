@@ -7,7 +7,7 @@ peer_list: List[str] = []
 
 @app.route("/api/get_nodes")
 def get_node_list():
-    return ["localhost"]
+    return peer_list
 
 @app.route("/api/connect")
 def connect_peer():
