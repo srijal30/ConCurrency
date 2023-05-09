@@ -9,6 +9,7 @@ import grpc
 from mining import MiningService
 import concurrent.futures as futures
 
+from random import choice
 import os
 from networking import *
 from model.crypto import *
@@ -44,13 +45,12 @@ class MiningNode():
         add_NetworkServicer_to_server(service, self.server)
         self.server.add_insecure_port('0.0.0.0'+MINER_PORT)
 
-        # connect to rendez
-        print("connecting...")
-        requests.get(REND_SERVER + "/api/connect")
-        print("connected")
-
         # reconcile the node with the network
         self.reconcile()
+
+        # connect to rendez
+        requests.get(REND_SERVER + "/api/connect")
+
 
     def start(self) -> None:
         """Starts the mining node."""
@@ -82,28 +82,24 @@ class MiningNode():
     # NOTE: has to be updated we implement multiple clients
     def reconcile(self):
         """Gets the current node up to speed with the rest of the network."""
-        our_len = len(self.model.blockchain.blocks)
+        # choose a random node to connect to
         ip_list : List[str] = json.loads(requests.get(REND_SERVER + "/api/get_nodes").text)
-        print("done")
-        exit()
-        for x in ip_list:
-            try:
-                #print(x+MINER_PORT)
-                requester = NetworkStub(channel = grpc.insecure_channel(x+MINER_PORT))
-                requester.get_chain(GetChainRequest(ip=x))
-            except grpc.RpcError as e:
-                print(e.details())
-            print(x)
+        if len(ip_list) < 1:
+            return
+        ip = choice(ip_list)
+        channel = grpc.insecure_channel(ip+MINER_PORT)
+        client = NetworkStub(channel)
 
+        net_len = client.get_chain_length(GetChainLengthRequest()).length
+        our_len = len(self.model.blockchain.blocks)
 
-        #net_len = self.client.get_chain_length(GetChainLengthRequest()).length
-        # if our_len < net_len:
-        #     print("DETECTED OLD VERSION OF CHAIN...\n")
-        #     updated_chain: GetChainReply = self.client.get_chain(GetChainRequest())
-        #     while our_len != net_len:  # this doesnt work if the chains diverge
-        #         new_block: GetBlockReply = self.client.get_block(GetBlockRequest(hash=updated_chain.hashes[our_len]))
-        #         self.model.add_block(new_block.block)
-        #         our_len += 1
-        #     store_blockchain(self.model.blockchain, 'blockchain.data')
-        #     store_snapshot(self.model.committed_snapshot, "committed_snapshot.data")
-        #     print("DONE UPDATING BLOCKCHAIN!")
+        if our_len < net_len:
+            print("DETECTED OLD VERSION OF CHAIN...\n")
+            updated_chain: GetChainReply = client.get_chain(GetChainRequest())
+            while our_len != net_len:  # this doesnt work if the chains diverge
+                new_block: GetBlockReply = client.get_block(GetBlockRequest(hash=updated_chain.hashes[our_len]))
+                self.model.add_block(new_block.block)
+                our_len += 1
+            store_blockchain(self.model.blockchain, 'blockchain.data')
+            store_snapshot(self.model.committed_snapshot, "committed_snapshot.data")
+            print("DONE UPDATING BLOCKCHAIN!")
