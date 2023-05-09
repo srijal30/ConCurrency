@@ -24,7 +24,7 @@ from socket import gethostname, gethostbyname
 
 PORT : str = ":5000"
 MINER_PORT: str = ":50001"
-REND_SERVER : str = "http://100.118.138.198:5000"
+REND_SERVER : str = "http://100.33.169.108:5000"
 # TO DO: add a way to choose whether to start or join the network and load old data from file
 class MiningNode():
     """Implementation of a mining node"""
@@ -46,11 +46,12 @@ class MiningNode():
         add_NetworkServicer_to_server(service, self.server)
         self.server.add_insecure_port('0.0.0.0'+MINER_PORT)
 
+        # connect to rendez
+        self.ip: str = requests.get(REND_SERVER + "/api/connect").text
+
         # reconcile the node with the network
         self.reconcile()
 
-        # connect to rendez
-        requests.get(REND_SERVER + "/api/connect")
 
 
     def start(self) -> None:
@@ -77,14 +78,14 @@ class MiningNode():
         for ip in self.get_ip_list():
             request = AnnounceBlockRequest(block= cb_block)
             announcer = NetworkStub(channel = grpc.insecure_channel(ip+MINER_PORT))
-            announce_block(request)
+            announcer.announce_block(request)
 
     def get_ip_list(self):
         ip_list : List[str] = json.loads(requests.get(REND_SERVER + "/api/get_nodes").text)
-        our_ip = gethostbyname(gethostname())
-        if our_ip in ip_list:
-            ip_list.remove(our_ip)
+        if self.ip in ip_list:
+            ip_list.remove(self.ip)
         return ip_list
+
 
     # NOTE: has to be updated we implement multiple clients
     def reconcile(self):

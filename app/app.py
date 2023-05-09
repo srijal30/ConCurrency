@@ -14,14 +14,14 @@ def connect_peer():
     ip: str = request.remote_addr
     if ip not in peer_list:
         peer_list.append(ip)
-    return "success"
+    return ip
 
 @app.route("/api/disconnect")
 def disconnect_peer():
     ip: str = request.remote_addr
     if ip in peer_list:
         peer_list.remove(ip)
-    return "success"
+    return ip
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0")
