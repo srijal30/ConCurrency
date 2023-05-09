@@ -50,7 +50,7 @@ class MiningNode():
         print("connected")
 
         # reconcile the node with the network
-        ##self.reconcile()
+        self.reconcile()
 
     def start(self) -> None:
         """Starts the mining node."""
@@ -88,6 +88,7 @@ class MiningNode():
         exit()
         for x in ip_list:
             try:
+                #print(x+MINER_PORT)
                 requester = NetworkStub(channel = grpc.insecure_channel(x+MINER_PORT))
                 requester.get_chain(GetChainRequest(ip=x))
             except grpc.RpcError as e:

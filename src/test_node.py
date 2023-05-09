@@ -7,4 +7,4 @@ if __name__ == "__main__":
     pub_key = serialize_public_key(create_keys()[1])
 
     test_node = MiningNode(pub_key)
-    test_node.start()
+    ##test_node.start()
