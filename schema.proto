@@ -113,7 +113,7 @@ message GetChainLengthReply{
 }
 
 message GetChainRequest{
-
+  string ip = 1;
 }
 
 message GetChainReply{

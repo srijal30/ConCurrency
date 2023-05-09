@@ -20,8 +20,8 @@ import requests
 import json
 from typing import List
 
-PORT : int = 50001
-REND_SERVER : int = "http://100.118.147.99:5000"
+PORT : int = 5000
+REND_SERVER : int = "http://192.168.1.178:5000"
 # TO DO: add a way to choose whether to start or join the network and load old data from file
 class MiningNode():
     """Implementation of a mining node"""
@@ -78,10 +78,14 @@ class MiningNode():
         """Gets the current node up to speed with the rest of the network."""
         our_len = len(self.model.blockchain.blocks)
         ip_list : List[str] = json.loads(requests.get(REND_SERVER + "/api/get_nodes").text)
-        # longest : blockchain
+        for x in ip_list:
+            try:
+                requester = NetworkStub(channel = grpc.insecure_channel(x+":"+str(5000)))
+                requester.get_chain(GetChainRequest(ip=x))
+            except grpc.RpcError as e:
+                print(e.details())
+            print(x)
 
-        # for x in ip_list:
-        #     if len(self.server.get_chain_length(GetChainLengthRequest(x+self.client_port)) > our_len):
 
         #net_len = self.client.get_chain_length(GetChainLengthRequest()).length
         # if our_len < net_len:

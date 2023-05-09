@@ -84,4 +84,5 @@ class Network(NetworkServicer):
     def get_chain(self, request: GetChainRequest, context) -> GetChainReply:
         return GetChainReply(
             hashes=[block.curr_hash for block in self.model.blockchain.blocks]
+
         )

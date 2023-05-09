@@ -80,8 +80,10 @@ class GetChainLengthReply(_message.Message):
     def __init__(self, length: _Optional[int] = ...) -> None: ...
 
 class GetChainLengthRequest(_message.Message):
-    __slots__ = []
-    def __init__(self) -> None: ...
+    __slots__ = ["ip"]
+    IP_FIELD_NUMBER: _ClassVar[int]
+    ip: str
+    def __init__(self, ip: _Optional[str] = ...) -> None: ...
 
 class GetChainReply(_message.Message):
     __slots__ = ["hashes"]
@@ -90,8 +92,10 @@ class GetChainReply(_message.Message):
     def __init__(self, hashes: _Optional[_Iterable[str]] = ...) -> None: ...
 
 class GetChainRequest(_message.Message):
-    __slots__ = []
-    def __init__(self) -> None: ...
+    __slots__ = ["ip"]
+    IP_FIELD_NUMBER: _ClassVar[int]
+    ip: str
+    def __init__(self, ip: _Optional[str] = ...) -> None: ...
 
 class GetTransactionReply(_message.Message):
     __slots__ = ["transaction"]
