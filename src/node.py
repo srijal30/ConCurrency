@@ -20,6 +20,7 @@ from model.loader import store_blockchain, store_snapshot
 import requests
 import json
 from typing import List
+from socket import gethostname, gethostbyname
 
 PORT : str = ":5000"
 MINER_PORT: str = ":50001"
@@ -73,17 +74,23 @@ class MiningNode():
             store_blockchain(self.model.blockchain, 'blockchain.data')
             store_snapshot(self.model.committed_snapshot, "committed_snapshot.data")
         # this is where the block forwarding will go
-        #if is_port_in_use(PORT) and self_mined:
-        #    request = AnnounceBlockRequest(block= cb_block)
-        #    announcer = NetworkStub(channel = grpc.insecure_channel(REND_SERVER+PORT))
-        #    announce_block(request)
+        for ip in self.get_ip_list():
+            request = AnnounceBlockRequest(block= cb_block)
+            announcer = NetworkStub(channel = grpc.insecure_channel(ip+MINER_PORT))
+            announce_block(request)
 
+    def get_ip_list(self):
+        ip_list : List[str] = json.loads(requests.get(REND_SERVER + "/api/get_nodes").text)
+        our_ip = gethostbyname(gethostname())
+        if our_ip in ip_list:
+            ip_list.remove(our_ip)
+        return ip_list
 
     # NOTE: has to be updated we implement multiple clients
     def reconcile(self):
         """Gets the current node up to speed with the rest of the network."""
         # choose a random node to connect to
-        ip_list : List[str] = json.loads(requests.get(REND_SERVER + "/api/get_nodes").text)
+        ip_list = self.get_ip_list()
         if len(ip_list) < 1:
             return
         ip = choice(ip_list)
