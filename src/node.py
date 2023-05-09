@@ -22,7 +22,7 @@ from typing import List
 
 PORT : str = ":5000"
 MINER_PORT: str = ":50001"
-REND_SERVER : str = "http://192.168.1.178:5000"
+REND_SERVER : str = "http://100.118.138.198:5000"
 # TO DO: add a way to choose whether to start or join the network and load old data from file
 class MiningNode():
     """Implementation of a mining node"""
@@ -42,8 +42,12 @@ class MiningNode():
         self.server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
         service = Network(self.model, self.new_block_callback)
         add_NetworkServicer_to_server(service, self.server)
-        self.server.add_insecure_port('localhost'+str(MINER_PORT))
+        self.server.add_insecure_port('0.0.0.0'+MINER_PORT)
+
+        # connect to rendez
+        print("connecting...")
         requests.get(REND_SERVER + "/api/connect")
+        print("connected")
 
         # reconcile the node with the network
         ##self.reconcile()
@@ -80,6 +84,8 @@ class MiningNode():
         """Gets the current node up to speed with the rest of the network."""
         our_len = len(self.model.blockchain.blocks)
         ip_list : List[str] = json.loads(requests.get(REND_SERVER + "/api/get_nodes").text)
+        print("done")
+        exit()
         for x in ip_list:
             try:
                 requester = NetworkStub(channel = grpc.insecure_channel(x+MINER_PORT))
