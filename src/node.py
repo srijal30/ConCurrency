@@ -21,6 +21,7 @@ import json
 from typing import List
 
 PORT : str = ":5000"
+MINER_PORT: str = ":50001"
 REND_SERVER : str = "http://192.168.1.178:5000"
 # TO DO: add a way to choose whether to start or join the network and load old data from file
 class MiningNode():
@@ -41,7 +42,7 @@ class MiningNode():
         self.server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
         service = Network(self.model, self.new_block_callback)
         add_NetworkServicer_to_server(service, self.server)
-        self.server.add_insecure_port('localhost'+str(PORT))
+        self.server.add_insecure_port('localhost'+str(MINER_PORT))
         requests.get(REND_SERVER + "/api/connect")
 
         # reconcile the node with the network
@@ -81,7 +82,7 @@ class MiningNode():
         ip_list : List[str] = json.loads(requests.get(REND_SERVER + "/api/get_nodes").text)
         for x in ip_list:
             try:
-                requester = NetworkStub(channel = grpc.insecure_channel(x+PORT))
+                requester = NetworkStub(channel = grpc.insecure_channel(x+MINER_PORT))
                 requester.get_chain(GetChainRequest(ip=x))
             except grpc.RpcError as e:
                 print(e.details())
