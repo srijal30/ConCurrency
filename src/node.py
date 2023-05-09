@@ -24,7 +24,7 @@ from socket import gethostname, gethostbyname
 
 PORT : str = ":5000"
 MINER_PORT: str = ":50001"
-REND_SERVER : str = "http://100.33.169.108:5000"
+REND_SERVER : str = "http://marge.stuy.edu:5000"
 # TO DO: add a way to choose whether to start or join the network and load old data from file
 class MiningNode():
     """Implementation of a mining node"""
