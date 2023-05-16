@@ -12,6 +12,7 @@ import requests
 from typing import List
 from random import choice
 import concurrent.futures as futures
+from datetime import time
 
 from mining import MiningService
 from networking import *
@@ -20,6 +21,7 @@ from model.blockchain import TalkingStick
 from model.proto.schema_pb2 import *
 from model.proto.schema_pb2_grpc import add_NetworkServicer_to_server, NetworkStub
 from model.loader import store_blockchain, store_snapshot
+
 
 PORT : str = ":5000"
 MINER_PORT: str = ":50001"
@@ -70,6 +72,7 @@ class MiningNode():
         """Callback for when a new block needs to be added to the chain."""
         # logging
         print(("MINED" if self_mined else "RECEIVED") + " A NEW BLOCK\n", cb_block, "\n", sep="")
+        print(("/nMINED AT: " + time.time().localtime()))
         # add the block
         if self.model.add_block(cb_block):
             store_blockchain(self.model.blockchain, 'blockchain.data')
