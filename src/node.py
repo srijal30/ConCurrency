@@ -5,26 +5,26 @@ File that contains the interface for the Node (miner).
 import sys
 sys.path.append("src/model/proto/")
 
+import os
 import grpc
-from mining import MiningService
+import json
+import requests
+from typing import List
+from random import choice
 import concurrent.futures as futures
 
-from random import choice
-import os
+from mining import MiningService
 from networking import *
 from model.crypto import *
 from model.blockchain import TalkingStick
 from model.proto.schema_pb2 import *
 from model.proto.schema_pb2_grpc import add_NetworkServicer_to_server, NetworkStub
 from model.loader import store_blockchain, store_snapshot
-import requests
-import json
-from typing import List
-from socket import gethostname, gethostbyname
 
 PORT : str = ":5000"
 MINER_PORT: str = ":50001"
 REND_SERVER : str = "http://marge.stuy.edu:5000"
+
 # TO DO: add a way to choose whether to start or join the network and load old data from file
 class MiningNode():
     """Implementation of a mining node"""

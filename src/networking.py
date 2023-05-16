@@ -3,20 +3,12 @@ File that contains the networking functions
 """
 rend_server : str = "http://172.16.0.2:5000/api/get_nodes"
 
-import socket
 from typing import Callable
 
 from model.proto.schema_pb2_grpc import NetworkServicer
-from model.proto.schema_pb2 import *
 from model.blockchain import TalkingStick
-from model.loader import store_blockchain
+from model.proto.schema_pb2 import *
 
-#((TESTINGGGG)) Checks if port is in use, otherwise, single node network will try to send a request to an inactive port
-# probably want to get rid of this later, since we are going to be using a central server (rendzevous???)
-# note: only works for localhost!!!
-def is_port_in_use(port: int) -> bool:
-    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-        return s.connect_ex(('localhost', port)) == 0
 
 class Network(NetworkServicer):
     # the arguments should all be wrapper classes w/ locks
