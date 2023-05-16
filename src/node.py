@@ -12,7 +12,7 @@ import requests
 from typing import List
 from random import choice
 import concurrent.futures as futures
-from datetime import time
+from time import time
 
 from mining import MiningService
 from networking import *
@@ -72,7 +72,7 @@ class MiningNode():
         """Callback for when a new block needs to be added to the chain."""
         # logging
         print(("MINED" if self_mined else "RECEIVED") + " A NEW BLOCK\n", cb_block, "\n", sep="")
-        print(("/nMINED AT: " + time.time().localtime()))
+        print(("/nMINED AT: " + time()))
         # add the block
         if self.model.add_block(cb_block):
             store_blockchain(self.model.blockchain, 'blockchain.data')
