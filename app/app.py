@@ -25,7 +25,7 @@ def pulse(start : bool) -> None:
 
 
 
-t1 = threading.Thread(target=pulse(), args=(True))
+t1 = threading.Thread(target=pulse, args=(True))
 t1.start()
 
 
