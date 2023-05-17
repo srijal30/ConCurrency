@@ -4,6 +4,8 @@ import socket
 import threading
 import time
 
+TIMEOUT = 5
+
 #((TESTINGGGG)) Checks if port is in use, otherwise, single node network will try to send a request to an inactive port
 # probably want to get rid of this later, since we are going to be using a central server (rendzevous???)
 # note: only works for localhost!!!
@@ -20,7 +22,7 @@ def peer_list_heartbeat() -> None:
 
 def pulse(start : bool) -> None:
     while start:
-        if (int(time.time()/60000000000) % 5 == 0):
+        if (int(time.time()/TIMEOUT) % 1 == 0):
             peer_list_heartbeat()
 
 
