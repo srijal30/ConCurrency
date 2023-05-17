@@ -72,7 +72,7 @@ class MiningNode():
         """Callback for when a new block needs to be added to the chain."""
         # logging
         print(("MINED" if self_mined else "RECEIVED") + " A NEW BLOCK\n", cb_block, "\n", sep="")
-        print(("/nMINED AT: " + time()))
+        print(("/nMINED AT: " + str(time())))
         # add the block
         if self.model.add_block(cb_block):
             store_blockchain(self.model.blockchain, 'blockchain.data')
