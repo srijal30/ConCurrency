@@ -3,6 +3,7 @@ test/
 
 # For storage
 *.data
+*.db
 
 # for vim nerds like Salaj and Jeff
 *.swp 
