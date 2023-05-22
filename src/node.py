@@ -20,12 +20,14 @@ from model.crypto import *
 from model.blockchain import TalkingStick
 from model.proto.schema_pb2 import *
 from model.proto.schema_pb2_grpc import add_NetworkServicer_to_server, NetworkStub
+from model.proto.server_pb2 import *
+from model.proto.server_pb2_grpc import add_ServerServicer_to_server
 from model.loader import store_blockchain, store_snapshot
 
-
-PORT : str = ":5000"
 MINER_PORT: str = ":50001"
+
 REND_SERVER : str = "http://marge.stuy.edu:5000"
+REND_SERVER_RESPONSE_SERVER_PORT = ":50002"
 
 # TO DO: add a way to choose whether to start or join the network and load old data from file
 class MiningNode():
@@ -34,6 +36,7 @@ class MiningNode():
     def __init__(self, pub_key: str):
         self.miner_pub_key: str = pub_key
 
+        #NOTE: fix this
         create_new = True
         if os.path.exists("blockchain.data") and os.path.exists("committed_snapshot.data"):
              create_new = False
@@ -42,30 +45,26 @@ class MiningNode():
         # setup miner
         self.miner = MiningService(self.miner_pub_key, self.model)
 
-        # server setup
+        # node server setup
         self.server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
         service = Network(self.model, self.new_block_callback)
         add_NetworkServicer_to_server(service, self.server)
         self.server.add_insecure_port('0.0.0.0'+MINER_PORT)
 
-        # connect to rendez
-        self.ip: str = requests.get(REND_SERVER + "/api/connect").text
+        # rend_server response server setup
 
         # reconcile the node with the network
         self.reconcile()
-
-
 
     def start(self) -> None:
         """Starts the mining node."""
         self.server.start()
         self.miner.start(self.new_block_callback)
-
+        
 
     def stop(self) -> None:
         """Stop the mining node."""
         pass
-
 
     # for now it takes an extra argument, but later we can just forward block in both cases
     def new_block_callback(self, cb_block: Block, self_mined: bool) -> None:
@@ -84,11 +83,12 @@ class MiningNode():
             announcer.announce_block(request)
 
     def get_ip_list(self):
+        """Get the ips from Rend Server"""
+        self.rend_server.get_ips()
         ip_list : List[str] = json.loads(requests.get(REND_SERVER + "/api/get_nodes").text)
         if self.ip in ip_list:
             ip_list.remove(self.ip)
         return ip_list
-
 
     # NOTE: has to be updated we implement multiple clients
     def reconcile(self):
@@ -114,3 +114,8 @@ class MiningNode():
             store_blockchain(self.model.blockchain, 'blockchain.data')
             store_snapshot(self.model.committed_snapshot, "committed_snapshot.data")
             print("DONE UPDATING BLOCKCHAIN!")
+
+if __name__ == "__main__":
+    pub_key = serialize_public_key(create_keys()[1])
+    test_node = MiningNode(pub_key)
+    test_node.start_node()

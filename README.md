@@ -21,9 +21,10 @@ pip install -r requirements.txt
 pip install -r dev-requirements.txt
 python -m grpc_tools.protoc -I. --python_out=src/model/proto --pyi_out=src/model/proto --grpc_python_out=src/model/proto schema.proto
 ```
- ## How to Setup Server
- ```
- python -m grpc_tools.protoc -I. --python_out=server/proto --pyi_out=server/proto --grpc_python_out=server/proto server.proto
- ```
+
+## How to Rend Setup Server
+```
+python -m grpc_tools.protoc -I. --python_out=src/model/proto --pyi_out=src/model/proto --grpc_python_out=src/model/proto server.proto
+```
 
 

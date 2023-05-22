@@ -2,11 +2,31 @@ syntax = "proto3";
 package messages;
 
 message PingServerRequest{
+    
 };
 
 message PingServerReply{
+
+};
+
+message GetIpListRequest{
+    
+};
+
+message GetIpListReply{
+    repeated string ip_list = 1;
+};
+
+message InitiateConnectionRequest{
+
+};
+
+message InitiateConnectionReply {
+
 };
 
 service Server{
     rpc ping_server(PingServerRequest) returns (PingServerReply) {};
+    rpc get_ip_list(GetIpListRequest) returns (GetIpListReply) {};
+    rpc initiate_connection(InitiateConnectionRequest) returns (InitiateConnectionReply) {};
 };
