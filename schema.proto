@@ -119,3 +119,4 @@ message GetChainRequest{
 message GetChainReply{
   repeated string hashes = 1;
 }
+
