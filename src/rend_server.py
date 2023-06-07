@@ -16,7 +16,8 @@ SERVER_PORT = 5000
 CLIENT_PORT = 5001
 
 class PingService(ServerServicer):
-   def ping(self, request: PingServerRequest, context) -> PingServerReply:
+   def ping_server(self, request: PingServerRequest, context) -> PingServerReply:
+      print("received")
       """"Response to ping by rend server"""
       return PingServerReply()
 
@@ -30,10 +31,17 @@ class RendServer(PingService):
 
    def initiate_connection(self, request, context):
       client_ip = context.peer()
+      print("client ip: " + client_ip)
+      # strips port and adds client port
+      split_result = client_ip.split(':')
+      split_result.pop(-1)
+      split_result.append(f"{CLIENT_PORT}")
+      client_ip = ":".join(split_result)
+      
       print(f"{client_ip} has connected")
       self.lock.acquire()
       if client_ip not in self.ip_list:
-         self.ip_list.append(context.peer())
+         self.ip_list.append(f"localhost:{CLIENT_PORT}")
       self.lock.release()
       return InitiateConnectionReply()
 
@@ -46,12 +54,16 @@ class RendServer(PingService):
       disconnected_ips = []
       """Pings all the peers in ip_list and checks which ones are still connected. If disconnected, removed from ip_list"""
       self.lock.acquire()
-      for ip in self.ip_list:
+      cop = self.ip_list.copy()
+      self.lock.release()
+      for ip in cop:
          tmp_client = ServerStub(channel = grpc.insecure_channel(ip))
          try:
             tmp_client.ping_server(PingServerRequest())
          except grpc.RpcError as e:
             disconnected_ips.append(ip)
+      
+      self.lock.acquire()
       for ip in disconnected_ips:
          print(f"{ip} has disconnected")  # NOTE
          if ip in self.ip_list:
