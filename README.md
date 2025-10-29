@@ -1,5 +1,5 @@
 # ConCurrency
-Google mentorship project in which we build a blockchain.
+Blockchain built from scratch that supports consensus among multiple mining nodes in a decentralized network. Also allows transfer of cryptocurrency.
 
 ## How to Use
 
