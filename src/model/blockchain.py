@@ -13,7 +13,7 @@ from threading import Lock
 class TalkingStick():
     def __init__(self, create_new: bool):
         self.blockchain = BlockChain()
-        self.trans_pool: Dict[str, Transaction] = [] 
+        self.trans_pool: Dict[str, Transaction] = {} #from hash to acc trans
         self.uncommitted_snapshot = Snapshot()
         self.committed_snapshot = Snapshot()
         self._lock = Lock()
@@ -90,17 +90,28 @@ class TalkingStick():
         return True
     
     def add_block(self, block:Block) -> bool:
-        """Adds block to the blockchain if valid. Returns whether operation was success. Also updates the committed snapshot."""    
+        """Adds block to the blockchain if valid. Returns whether operation was success. Also updates the committed snapshot."""
+        
         # Check block validity
         if not self.validate_block(block):
            return False
+        
         self._lock.acquire()
+        try:
+            #check if miner account acc exists yet
+            if block.miner_pub_key not in self.committed_snapshot.accounts:
+                self.committed_snapshot.accounts[block.miner_pub_key].balance = 0
+                self.committed_snapshot.accounts[block.miner_pub_key].sequence = 0
+
         # Reward the miner
-        self.committed_snapshot.accounts[block.miner_pub_key].balance += block.reward
+            self.committed_snapshot.accounts[block.miner_pub_key].balance += block.reward
+
         # Update the blockchain with new block
-        self.blockchain.blocks.append(block)
-        self._lock.release()
-        return True
+            self.blockchain.blocks.append(block)
+            return True
+        finally:
+            self._lock.release()
+        
     
     def calculate_difficulty(self) -> int:
         """Calculates the difficulty for the next block."""
@@ -111,35 +122,51 @@ class TalkingStick():
         return 100
     
     ### SNAPSHOT
-    def _validate_snapshot(self, snap : Snapshot, tran: Transaction, trans_list : List[Transaction]) -> bool:
+    def _validate_snapshot(self, snap : Snapshot, tran: Transaction, trans_list : List[Transaction]) -> bool: ##other validate unused for now
         """Returns False if the transaction is invalid, true otherwise"""
-        if not self.validate_transaction(tran) or not self.replay_committed(tran):
-            # revert
+        if not self.validate_transaction(tran):
+            return False
+        
+        if not self._replay_transaction(snap, tran):
             for added_tran in reversed(trans_list):
                 self.undo_transaction(snap, added_tran)
             # return false
             return False
         return True
 
-    def replay_committed(self, tran: Transaction) -> bool:
+    def replay_committed(self, tran: Transaction) -> bool: 
         """Does _replay_transaction on committed snapshot"""
         self._lock.acquire()
-        result : bool = self._replay_transaction(self, self.committed_snapshot, tran)
-        self._lock.release()
+        try:
+            result : bool = self._replay_transaction(self.committed_snapshot, tran)
+        finally:
+            self._lock.release()
         return result
     
     def replay_uncommitted(self, tran: Transaction) -> bool:
         """Does _replay_transaction on uncommitted snapshot"""
         self._lock.acquire() 
-        result : bool = self._replay_transaction(self, self.uncommitted_snapshot, tran)
-        self._lock.release()
+        try:
+            result : bool = self._replay_transaction(self.uncommitted_snapshot, tran)
+        finally:    
+            self._lock.release()
         return result
     
     def _replay_transaction(self, snapshot: Snapshot, tran: Transaction) ->  bool:
         """Checks if sequence number is correct, and that the exchange of coins is valid. Returns true if transaction added to Snapshot successfully."""
+        
+        #will fail on first transactiono or reward so auto create new accs:
+        if tran.sender_pub_key not in snapshot.accounts:
+            snapshot.accounts[tran.sender_pub_key].balance = 0
+            snapshot.accounts[tran.sender_pub_key].sequence = 0
+        if tran.receiver_pub_key not in snapshot.accounts:
+            snapshot.accounts[tran.receiver_pub_key].balance = 0
+            snapshot.accounts[tran.receiver_pub_key].sequence = 0
+
         # check if sequence is correct
-        if tran.sequence != snapshot.accounts[tran.sender_pub_key].sequence:
+        if tran.sequence != snapshot.accounts[tran.senderls_pub_key].sequence:
             return False
+        
         # send amount to receiver if sender has enough (and update sequence)
         if snapshot.accounts[tran.sender_pub_key].balance >= tran.amount:
             snapshot.accounts[tran.sender_pub_key].sequence += 1
@@ -151,11 +178,14 @@ class TalkingStick():
     
     def undo_transaction(self, snapshot: Snapshot, tran: Transaction) -> None:
         """Undoes the effects of a transaction on snapshot"""
-        self._lock.acquire()
-        snapshot.accounts[tran.sender_pub_key].sequence -= 1
-        snapshot.accounts[tran.receiver_pub_key].balance -= tran.amount
-        snapshot.accounts[tran.sender_pub_key].balance += tran.amount
-        self._lock.release()
+        self._lock.acquire() #thread safety
+        try:
+            if( tran.sender_pub_key in snapshot.accounts and tran.receiver_pub_key in snapshot.accounts):
+                snapshot.accounts[tran.sender_pub_key].sequence -= 1
+                snapshot.accounts[tran.receiver_pub_key].balance -= tran.amount
+                snapshot.accounts[tran.sender_pub_key].balance += tran.amount
+        finally:
+            self._lock.release()
     
     ### MINING POOL
     def pool_add(self, tran : Transaction) -> None:
@@ -167,8 +197,10 @@ class TalkingStick():
     
     def pool_has(self, hash : str):
         self._lock.acquire()
-        self._lock.release()
-        return hash in self.trans_pool
+        try:
+            return hash in self.trans_pool
+        finally:
+            self._lock.release()
     
     def pool_remove(self, hash : str) -> None:
         self._lock.acquire()
