@@ -70,12 +70,29 @@ class MiningNode():
     def new_block_callback(self, cb_block: Block, self_mined: bool) -> None:
         """Callback for when a new block needs to be added to the chain."""
         # logging
-        print(("MINED" if self_mined else "RECEIVED") + " A NEW BLOCK\n", cb_block, "\n", sep="")
-        print(("/nMINED AT: " + str(time())))
-        # add the block
-        if self.model.add_block(cb_block):
-            store_blockchain(self.model.blockchain, 'blockchain.data')
-            store_snapshot(self.model.committed_snapshot, "committed_snapshot.data")
+        label = "MINED" if self_mined else "RECEIVED"
+        print(f"[NODE] {label} A NEW BLOCK")
+        print(cb_block)
+        print("\nMINED AT:", time())
+
+        # try to add the block
+        if not self.model.add_block(cb_block):
+            print("[NODE] Block failed validation!!! Bye bye block :O.") 
+            return
+        
+        for tran in cb_block.trans:
+            if self.model.pool_has(tran.hash):
+                self.model.pool_remove(tran.hash)
+                print(f"[NODE] Removed tx {tran.hash[:16]}... from mempool")
+
+        #sync snapshops
+        self.model.uncommitted_snapshot.CopyFrom(self.model.committed_snapshot)
+        print("[NODE] Synced uncommitted snapshot to committed snapshot")
+
+        #store stuff
+        store_blockchain(self.model.blockchain, "blockchain.data")
+        store_snapshot(self.model.committed_snapshot, "committed_snapshot.data")
+
         # this is where the block forwarding will go
         for ip in self.get_ip_list():
             request = AnnounceBlockRequest(block= cb_block)
