@@ -164,7 +164,7 @@ class TalkingStick():
             snapshot.accounts[tran.receiver_pub_key].sequence = 0
 
         # check if sequence is correct
-        if tran.sequence != snapshot.accounts[tran.senderls_pub_key].sequence:
+        if tran.sequence != snapshot.accounts[tran.sender_pub_key].sequence:
             return False
         
         # send amount to receiver if sender has enough (and update sequence)

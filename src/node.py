@@ -82,13 +82,16 @@ class MiningNode():
             announcer = NetworkStub(channel = grpc.insecure_channel(ip+MINER_PORT))
             announcer.announce_block(request)
 
-    def get_ip_list(self):
+    def get_ip_list(self) -> List[str] :
         """Get the ips from Rend Server"""
+        ''' 
         self.rend_server.get_ips()
         ip_list : List[str] = json.loads(requests.get(REND_SERVER + "/api/get_nodes").text)
         if self.ip in ip_list:
             ip_list.remove(self.ip)
         return ip_list
+        '''
+        return []
 
     # NOTE: has to be updated we implement multiple clients
     def reconcile(self):
@@ -118,4 +121,4 @@ class MiningNode():
 if __name__ == "__main__":
     pub_key = serialize_public_key(create_keys()[1])
     test_node = MiningNode(pub_key)
-    test_node.start_node()
+    test_node.start()

@@ -37,7 +37,7 @@ class MiningService():
         # add the transactions (needs modification)
         MAX_TRANSACTIONS = 10
         ctr = 0
-        for hash, tran in self.model.trans_pool:
+        for tx_hash, tran in self.model.trans_pool.items():
             new_block.trans.append(tran)
             ctr += 1
             if ctr == MAX_TRANSACTIONS:
@@ -52,7 +52,12 @@ class MiningService():
         while block.curr_hash[0:block.difficulty] != "0"*block.difficulty:
             # stops mining if the prev_hash is no longer valid 
             if not self.model.blockchain.blocks[-1].curr_hash == block.prev_hash:
+                print("[MINER] head changed so abandoning current block :O")
                 return  # make stop mining more explicit
             block.nonce += 1
             block.curr_hash = hash_block(block)
+        print(
+            f"[MINER] found block!!!! nonce={block.nonce}, "
+            f"hash={block.curr_hash[:16]}..., txs={len(block.trans)}"
+        )
         callback(block, True)

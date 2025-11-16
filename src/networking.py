@@ -37,8 +37,17 @@ class Network(NetworkServicer):
     def announce_transaction(self, request: AnnounceTransactionRequest, context) -> AnnounceTransactionReply:
         """Adds transaction to transaction pool if it is valid. Also updates uncommited snapshot."""
         new_tran = request.transaction
+
+        print(
+            f"[NET] Receieved tx {new_tran.hash[:16]}..."
+            f"Amount ={new_tran.amount}, seq ={new_tran.sequence}"
+        )
+
         if self.model.validate_transaction(new_tran) and self.model.replay_uncommitted(new_tran):
             self.model.pool_add(new_tran)
+            print("[NET -> tx accepted into pool!")
+        else:
+            print("[NET] -> tx boooo!")
         return AnnounceTransactionReply()    
 
 
